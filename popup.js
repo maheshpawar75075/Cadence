@@ -758,6 +758,15 @@ el("openDashboard").addEventListener("click", () => {
 });
 
 (async function init() {
+  if (FL.saasGate) {
+    const isEntitled = await FL.saasGate.protectPage({
+      onEntitled: () => {
+        render();
+      }
+    });
+    if (!isEntitled) return;
+  }
+
   proSettings = await FL.loadProSettings();
   const initialMode = (proSettings && proSettings.themeSettings && proSettings.themeSettings.themeMode) || "system";
   applyTheme(initialMode);
@@ -784,7 +793,11 @@ el("openDashboard").addEventListener("click", () => {
 
   if (el("proStatusPill")) {
     el("proStatusPill").addEventListener("click", () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html#pro") });
+      if (FL.saasUI) {
+        FL.saasUI.showManagementModal();
+      } else {
+        chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html#pro") });
+      }
     });
   }
 

@@ -21,7 +21,12 @@
   "permissions": ["storage", "unlimitedStorage", "alarms", "notifications", "topSites", "bookmarks", "identity", "tabs"],
   "host_permissions": [
     "https://suggestqueries.google.com/*",
-    "https://images.unsplash.com/*"
+    "https://images.unsplash.com/*",
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
+    "https://*.supabase.co/*",
+    "https://api.razorpay.com/*",
+    "https://api.stripe.com/*"
   ],
   "omnibox": { "keyword": "cd" },
   "background": {
@@ -43,7 +48,12 @@
         "cadence-agent.js",
         "cadence-agent.css",
         "blocked.html",
-        "blocked.css"
+        "blocked.css",
+        "lib/saas-client.js",
+        "lib/saas-ui.js",
+        "lib/saas-gate.js",
+        "admin.html",
+        "admin.js"
       ],
       "matches": ["<all_urls>"]
     }

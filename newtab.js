@@ -2898,7 +2898,21 @@
     if (closeBtn) closeBtn.addEventListener("click", dismiss);
   }
 
-  function boot() {
+  async function boot() {
+    const subBtn = document.getElementById("ntpManageSubBtn");
+    if (subBtn) {
+      subBtn.addEventListener("click", () => {
+        if (window.FL && FL.saasUI) {
+          FL.saasUI.showManagementModal();
+        }
+      });
+    }
+
+    if (window.FL && FL.saasGate) {
+      const isEntitled = await FL.saasGate.protectPage();
+      if (!isEntitled) return;
+    }
+
     init();
   }
 

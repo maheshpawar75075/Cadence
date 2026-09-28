@@ -824,6 +824,10 @@ function renderStripePricingSection() {
 }
 
 function openStripeCheckoutModal(planKey, region) {
+  if (FL.saasUI) {
+    FL.saasUI.showPricingModal();
+    return;
+  }
   const modal = el("stripeCheckoutModal");
   if (!modal || !FL.STRIPE_PLANS) return;
 
@@ -1427,8 +1431,12 @@ Thank you for investing in your daily execution and high-performance habits!`;
     });
   }
 
-  // Open Stripe Customer Portal
+  // Open Stripe / SaaS Customer Portal & Subscription Manager
   const openPortal = () => {
+    if (FL.saasUI) {
+      FL.saasUI.showManagementModal();
+      return;
+    }
     const url = FL.STRIPE_CONFIG.customerPortalUrl || "https://billing.stripe.com";
     window.open(url, "_blank");
   };
@@ -1988,6 +1996,11 @@ if (el("themeToggleBtn")) {
 /* Init                                                                 */
 /* ------------------------------------------------------------------ */
 (async function init() {
+  if (FL.saasGate) {
+    const isEntitled = await FL.saasGate.protectPage();
+    if (!isEntitled) return;
+  }
+
   state.proSettings = await loadProSettings();
   if (state.proSettings && state.proSettings.focusSession && state.proSettings.focusSession.running) {
     startFocusTicker();

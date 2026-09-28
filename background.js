@@ -259,10 +259,25 @@ if (chrome.omnibox) {
     const raw = (text || "").trim();
     const q = raw.toLowerCase();
 
-    const stored = await chrome.storage.local.get(["fl_habits", "fl_completions", "fl_pro_settings", "fl_settings"]);
+    const stored = await chrome.storage.local.get(["fl_habits", "fl_completions", "fl_pro_settings", "fl_settings", "cadence_saas_entitlement"]);
     const habits = stored.fl_habits || [];
     const completions = stored.fl_completions || {};
     const pro = stored.fl_pro_settings || {};
+    const entitlement = stored.cadence_saas_entitlement || {};
+    const isEntitled = Boolean(pro.isPro || entitlement.entitled === true);
+
+    if (!isEntitled) {
+      chrome.notifications.create("cd_sub_req_" + Date.now(), {
+        type: "basic",
+        iconUrl: "icons/icon128.png",
+        title: "Cadence Pro Subscription Required",
+        message: "Subscribe to Cadence Pro (₹69/mo or ₹799/yr) to unlock commands & focus features.",
+        priority: 2
+      });
+      chrome.tabs.create({ url: chrome.runtime.getURL("newtab.html") });
+      return;
+    }
+
     const today = new Date().toISOString().slice(0, 10);
     if (!completions[today]) completions[today] = {};
 
