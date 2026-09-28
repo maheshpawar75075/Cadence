@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Cadence</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="popup.css" />
+<link rel="stylesheet" href="mascot.css" />
+<link rel="stylesheet" href="cadence-agent.css" />
+</head>
+<body>
+  <canvas id="fxCanvas"></canvas>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-text">Cadence</span>
+      </div>
+      <div class="topbar-right">
+        <span class="pro-tag" id="proStatusPill" title="Cadence Pro Active — Click to manage avatars">⚡ PRO</span>
+        <span class="shield-tag" title="Streak Freeze Shields Active">🛡️ 2</span>
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">🌙</button>
+        <div class="today-chip" id="todayChip"></div>
+      </div>
+    </header>
+
+    <div class="hero" id="heroCard">
+      <canvas id="heroFx"></canvas>
+      <div class="hero-ring">
+        <svg id="heroRing" width="76" height="76" viewBox="0 0 76 76"></svg>
+        <div class="hero-pct" id="heroPct">0%</div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b id="heroDone">0/0</b><span>done today</span></div>
+        <div class="hero-stat"><b id="heroStreak">0</b><span>best streak</span></div>
+      </div>
+      <div id="heroMascotMount" class="hero-mascot-mount"></div>
+    </div>
+
+    <div id="smartInsight" class="smart-insight"></div>
+
+    <!-- Pro Quick Tools Row -->
+    <div class="quick-tools-row">
+      <button id="pomoTimerBtn" class="quick-tool-btn" type="button">
+        <span class="tool-ic">⏱️</span>
+        <span class="tool-lbl">Focus</span>
+      </button>
+      <button id="popupCadenceBtn" class="quick-tool-btn quick-tool-btn--cadence" type="button" title="Talk with Cadence AI">
+        <span class="tool-ic">🎙️</span>
+        <span class="tool-lbl">Cadence AI</span>
+        <span class="tool-beacon"></span>
+      </button>
+      <button id="ritualModeBtn" class="quick-tool-btn" type="button">
+        <span class="tool-ic">🌅</span>
+        <span class="tool-lbl">Ritual</span>
+      </button>
+    </div>
+
+    <!-- Daily Stoic Mindset Banner -->
+    <div id="dailyQuoteBanner" class="daily-quote-card">
+      <span class="quote-ic">🧘</span>
+      <span id="dailyQuoteText" class="quote-text">"We are what we repeatedly do. Excellence is a habit." — Aristotle</span>
+    </div>
+
+    <div class="progress-strip">
+      <div class="progress-mini progress-mini--daily">
+        <div class="progress-mini-head">
+          <span class="progress-mini-label">Daily</span>
+          <span class="progress-mini-val" id="popupDailyPct">0%</span>
+        </div>
+        <div id="popupDailyGauge" class="popup-gauge"></div>
+        <div id="popupDailyBars" class="popup-bars"></div>
+      </div>
+      <div class="progress-divider"></div>
+      <div class="progress-mini progress-mini--weekly">
+        <div class="progress-mini-head">
+          <span class="progress-mini-label">Weekly</span>
+          <span class="progress-mini-val" id="popupWeeklyPct">0%</span>
+        </div>
+        <div id="popupWeekChart" class="popup-week-chart"></div>
+      </div>
+    </div>
+
+    <form id="quickAddForm" class="quick-add-bar">
+      <input type="text" id="quickAddInput" placeholder="+ Quick add a habit..." maxlength="50" autocomplete="off"/>
+      <button type="submit" class="quick-add-btn">Add</button>
+    </form>
+
+    <div class="section-label-row">
+      <span class="section-label">Today's checklist</span>
+    </div>
+    <div class="category-pills" id="categoryPills">
+      <button class="cat-pill active" data-cat="all">All</button>
+      <button class="cat-pill" data-cat="work">💼 Work</button>
+      <button class="cat-pill" data-cat="health">💪 Health</button>
+      <button class="cat-pill" data-cat="diet">🥗 Diet</button>
+      <button class="cat-pill" data-cat="mind">🧘 Mind</button>
+      <button class="cat-pill" data-cat="personal">✨ Personal</button>
+    </div>
+
+    <div id="todayList" class="today-list"></div>
+
+    <button id="openDashboard" class="dashboard-btn" type="button">
+      <span>Open Full Dashboard</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+    </button>
+
+    <div id="saveIndicator" class="save-indicator"></div>
+  </div>
+  <canvas id="confettiCanvas"></canvas>
+  <script src="lib/data.js"></script>
+  <script src="lib/charts.js"></script>
+  <script src="lib/pro-catalog.js"></script>
+  <script src="lib/audio.js"></script>
+  <script src="lib/theme.js"></script>
+  <script src="lib/billing.js"></script>
+  <script src="lib/suggestions.js"></script>
+  <script src="lib/reminders.js"></script>
+  <script src="common.js"></script>
+  <script src="cadence-agent.js"></script>
+  <script src="mascot.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

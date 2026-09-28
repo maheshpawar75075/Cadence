@@ -1,0 +1,495 @@
+/* Star Knight — cinematic image-based cheer mascot */
+.mascot {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  width: 130px;
+  height: 150px;
+}
+.mascot--popup {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  bottom: 6px;
+  left: auto;
+  width: 98px;
+  height: calc(100% - 12px);
+}
+.mascot--dashboard {
+  bottom: 12px;
+  right: 16px;
+  width: 150px;
+  height: 172px;
+}
+
+/* Popup — knight inside the hero bar (upper right) */
+.mascot--popup .mascot-stage {
+  border-radius: 14px;
+}
+.mascot--popup .mascot-frame {
+  border-radius: 14px;
+  box-shadow:
+    0 8px 24px -8px rgba(15, 5, 40, 0.45),
+    0 0 0 1.5px rgba(255, 255, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.mascot--popup .mascot-backdrop {
+  border-radius: 14px;
+  inset: 4px;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.18) 0%, rgba(124, 58, 237, 0.25) 50%, transparent 75%);
+}
+.mascot--popup .mascot-vignette {
+  border-radius: 14px;
+  box-shadow: inset 0 -16px 24px rgba(15, 5, 40, 0.25);
+}
+.mascot--popup .mascot-film-grain {
+  border-radius: 14px;
+}
+.mascot--popup .mascot-glow-ring {
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  bottom: 4px;
+}
+.mascot--popup .mascot-bubble {
+  bottom: auto;
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%) scale(0.72);
+  transform-origin: center right;
+  white-space: nowrap;
+  z-index: 5;
+}
+.mascot--popup.show-bubble .mascot-bubble {
+  animation: knight-bubble-pop-left 0.55s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+.mascot--popup .mascot-bubble::after {
+  right: -6px;
+  left: auto;
+  bottom: auto;
+  top: 50%;
+  margin-top: -6px;
+  transform: rotate(-45deg);
+  border-left: none;
+  border-bottom: none;
+  border-top: 2px solid rgba(167, 139, 250, 0.35);
+  border-right: 2px solid rgba(167, 139, 250, 0.35);
+}
+@keyframes knight-bubble-pop-left {
+  0% { opacity: 0; transform: translateY(-50%) translateX(10px) scale(0.72); }
+  60% { opacity: 1; transform: translateY(-50%) translateX(-4px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1); }
+}
+
+.mascot--popup .mascot-fx {
+  inset: -30px -40px -20px -80px;
+  width: calc(100% + 120px);
+  height: calc(100% + 50px);
+}
+
+.mascot-fx {
+  position: absolute;
+  inset: -50px -60px -30px -60px;
+  width: calc(100% + 120px);
+  height: calc(100% + 80px);
+  pointer-events: none;
+}
+
+/* Cosmic stage */
+.mascot-stage {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  overflow: visible;
+  transform-style: preserve-3d;
+  perspective: 800px;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(.2,.8,.25,1);
+}
+.mascot-stage:hover {
+  filter: brightness(1.06);
+}
+
+.mascot-backdrop {
+  position: absolute;
+  inset: 8px 4px 0;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 50% 20%, rgba(124, 58, 237, 0.35) 0%, rgba(45, 16, 110, 0.15) 45%, transparent 70%);
+  filter: blur(2px);
+  transform: translateZ(-15px);
+  animation: knight-aura 4s ease-in-out infinite;
+}
+.mascot.cheering .mascot-backdrop {
+  animation: knight-aura-burst 1.6s cubic-bezier(.22, 1, .32, 1) forwards;
+}
+.mascot.epic .mascot-backdrop {
+  background: radial-gradient(ellipse at 50% 15%, rgba(255, 209, 102, 0.4) 0%, rgba(124, 58, 237, 0.35) 40%, transparent 72%);
+}
+
+/* Time-of-day dynamic backdrop themes */
+.mascot-stage--dawn .mascot-backdrop {
+  background: radial-gradient(ellipse at 50% 20%, rgba(251, 191, 36, 0.45) 0%, rgba(245, 158, 11, 0.2) 45%, transparent 70%);
+}
+.mascot-stage--day .mascot-backdrop {
+  background: radial-gradient(ellipse at 50% 20%, rgba(56, 189, 248, 0.4) 0%, rgba(99, 102, 241, 0.2) 45%, transparent 70%);
+}
+.mascot-stage--sunset .mascot-backdrop {
+  background: radial-gradient(ellipse at 50% 20%, rgba(244, 63, 94, 0.45) 0%, rgba(217, 70, 239, 0.2) 45%, transparent 70%);
+}
+.mascot-stage--night .mascot-backdrop {
+  background: radial-gradient(ellipse at 50% 20%, rgba(124, 58, 237, 0.45) 0%, rgba(45, 16, 110, 0.2) 45%, transparent 70%);
+}
+
+/* Elemental Aura Customizations */
+.aura-violet .mascot-glow-ring {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, rgba(108, 92, 231, 0.15) 50%, transparent 72%);
+}
+.aura-gold .mascot-glow-ring {
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.7) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 72%);
+}
+.aura-emerald .mascot-glow-ring {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.65) 0%, rgba(5, 150, 105, 0.2) 50%, transparent 72%);
+}
+.aura-cyber .mascot-glow-ring {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.7) 0%, rgba(59, 130, 246, 0.2) 50%, transparent 72%);
+}
+.aura-crimson .mascot-glow-ring {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.7) 0%, rgba(225, 29, 72, 0.2) 50%, transparent 72%);
+}
+
+.mascot-glow-ring {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 90px;
+  height: 90px;
+  margin-left: -45px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, rgba(108, 92, 231, 0.12) 50%, transparent 72%);
+  filter: blur(10px);
+  transform: translateZ(-8px);
+  animation: knight-glow-pulse 3.2s ease-in-out infinite;
+}
+.mascot.cheering .mascot-glow-ring {
+  animation: knight-glow-burst 1.6s cubic-bezier(.22, 1, .32, 1) forwards;
+}
+
+/* Level & XP Progression Badge */
+.mascot-level-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(30px);
+  background: rgba(15, 10, 30, 0.76);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 3px 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 76px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.mascot-level-badge:hover {
+  transform: translateX(-50%) translateZ(32px) scale(1.06);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(28, 20, 52, 0.88);
+}
+.mascot-lvl-txt {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.mascot-xp-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.mascot-xp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #A78BFA, #38BDF8, #FCD34D);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(.2,.8,.25,1);
+}
+
+.mascot-ground-shine {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 70px;
+  height: 14px;
+  margin-left: -35px;
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.35) 0%, transparent 72%);
+  filter: blur(3px);
+  transform: translateZ(-2px);
+  animation: knight-shadow-idle 3.2s ease-in-out infinite;
+}
+.mascot.cheering .mascot-ground-shine {
+  animation: knight-shadow-jump 1.6s cubic-bezier(.22, 1, .32, 1) forwards;
+}
+
+/* Character rig — 3D subtle tilt motion (Fixed Y position) */
+.mascot-rig {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  animation: knight-idle-float 4s ease-in-out infinite;
+}
+.mascot.cheering .mascot-rig {
+  animation: knight-cheer-sequence 1.6s cubic-bezier(.22, 1, .32, 1) forwards;
+}
+.mascot.epic.cheering .mascot-rig {
+  animation: knight-epic-sequence 2.2s cubic-bezier(.22, 1, .32, 1) forwards;
+}
+
+.mascot-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  box-shadow:
+    0 16px 40px -12px rgba(45, 16, 110, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.mascot-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  transform-origin: 50% 85%;
+  transform: translateZ(12px);
+  will-change: transform, opacity, filter;
+}
+
+.mascot-img--idle {
+  opacity: 1;
+  animation: knight-idle-breathe 4s ease-in-out infinite, knight-ken-burns 12s ease-in-out infinite alternate;
+}
+.mascot-img--cheer {
+  opacity: 0;
+  object-position: center 25%;
+  transform: translateZ(14px) scale(1.05) translateX(0);
+}
+.mascot.cheering .mascot-img--idle {
+  animation: knight-fade-out 0.35s ease forwards;
+}
+.mascot.cheering .mascot-img--cheer {
+  animation: knight-fade-in-action 0.4s ease 0.12s forwards, knight-action-sway 1.2s ease-in-out 0.3s 2;
+}
+
+/* Sword / magic shimmer overlay */
+.mascot-shimmer {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(20px);
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(167, 139, 250, 0.08) 42%,
+    rgba(255, 255, 255, 0.18) 48%,
+    rgba(167, 139, 250, 0.08) 54%,
+    transparent 66%
+  );
+  background-size: 220% 100%;
+  animation: knight-shimmer 5s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.mascot.cheering .mascot-shimmer {
+  animation: knight-shimmer-fast 0.8s ease-in-out 3;
+}
+
+.mascot-vignette {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  transform: translateZ(24px);
+  box-shadow: inset 0 -20px 30px rgba(15, 5, 40, 0.35), inset 0 0 40px rgba(45, 16, 110, 0.15);
+  pointer-events: none;
+}
+
+.mascot-film-grain {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  transform: translateZ(26px);
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Speech bubble — glassmorphic & clickable */
+.mascot-bubble {
+  position: absolute;
+  bottom: calc(100% - 2px);
+  right: -8px;
+  min-width: 100px;
+  max-width: 175px;
+  padding: 9px 13px;
+  border-radius: 18px 18px 6px 18px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(243, 240, 255, 0.96) 100%);
+  border: 1.5px solid rgba(167, 139, 250, 0.45);
+  box-shadow:
+    0 10px 28px -6px rgba(45, 16, 110, 0.35),
+    0 0 16px rgba(139, 92, 246, 0.25);
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #2d2d3a;
+  text-align: center;
+  line-height: 1.3;
+  opacity: 0;
+  transform: translateY(14px) scale(0.72) translateZ(35px);
+  transform-origin: bottom right;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+}
+.mascot-bubble::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  background: rgba(243, 240, 255, 0.96);
+  border-right: 1.5px solid rgba(167, 139, 250, 0.45);
+  border-bottom: 1.5px solid rgba(167, 139, 250, 0.45);
+  transform: rotate(45deg);
+}
+.mascot.show-bubble .mascot-bubble {
+  animation: knight-bubble-pop 0.55s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+
+[data-theme="dark"] .mascot-bubble {
+  background: linear-gradient(145deg, rgba(30, 24, 52, 0.96) 0%, rgba(18, 14, 32, 0.98) 100%);
+  border-color: rgba(167, 139, 250, 0.5);
+  color: #F8F9FA;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.7), 0 0 18px rgba(139, 92, 246, 0.35);
+}
+
+[data-theme="dark"] .mascot-bubble::after {
+  background: rgba(18, 14, 32, 0.98);
+  border-right: 1.5px solid rgba(167, 139, 250, 0.5);
+  border-bottom: 1.5px solid rgba(167, 139, 250, 0.5);
+}
+
+/* Sparkle layer (DOM) */
+.mascot-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px #a78bfa;
+  pointer-events: none;
+  animation: knight-sparkle-float 1.2s ease-out forwards;
+}
+
+/* ========== KEYFRAMES — 3D motion without Y-jumping ========== */
+@keyframes knight-idle-float {
+  0%, 100% { transform: perspective(800px) rotateY(-4deg) rotateX(2deg) scale(1); }
+  50%      { transform: perspective(800px) rotateY(4deg) rotateX(-2deg) scale(1.025); }
+}
+@keyframes knight-idle-breathe {
+  0%, 100% { transform: translateZ(12px) scale(1); }
+  50% { transform: translateZ(14px) scale(1.025); }
+}
+@keyframes knight-ken-burns {
+  0% { transform: translateZ(12px) scale(1) translate(0, 0); }
+  100% { transform: translateZ(14px) scale(1.06) translate(-1%, -1%); }
+}
+@keyframes knight-aura {
+  0%, 100% { opacity: 0.7; transform: translateZ(-15px) scale(1); }
+  50% { opacity: 1; transform: translateZ(-15px) scale(1.06); }
+}
+@keyframes knight-aura-burst {
+  0% { opacity: 0.7; transform: translateZ(-15px) scale(1); }
+  25% { opacity: 1; transform: translateZ(-15px) scale(1.28); }
+  100% { opacity: 0.75; transform: translateZ(-15px) scale(1.1); }
+}
+@keyframes knight-glow-pulse {
+  0%, 100% { opacity: 0.55; transform: translateZ(-8px) scale(1); }
+  50% { opacity: 0.85; transform: translateZ(-8px) scale(1.08); }
+}
+@keyframes knight-glow-burst {
+  0% { opacity: 0.55; transform: translateZ(-8px) scale(1); }
+  30% { opacity: 1; transform: translateZ(-8px) scale(1.35); }
+  100% { opacity: 0.6; transform: translateZ(-8px) scale(1.1); }
+}
+@keyframes knight-shadow-idle {
+  0%, 100% { opacity: 0.6; transform: translateZ(-2px) scaleX(1); }
+  50% { opacity: 0.45; transform: translateZ(-2px) scaleX(0.9); }
+}
+@keyframes knight-shadow-jump {
+  0%, 100% { opacity: 0.6; transform: translateZ(-2px) scaleX(1); }
+  50% { opacity: 0.85; transform: translateZ(-2px) scaleX(1.2); }
+}
+@keyframes knight-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes knight-shimmer-fast {
+  0% { background-position: 200% 0; opacity: 0.6; }
+  100% { background-position: -200% 0; opacity: 1; }
+}
+@keyframes knight-fade-out {
+  to { opacity: 0; transform: translateZ(12px) scale(0.95); filter: blur(1px); }
+}
+@keyframes knight-fade-in-action {
+  to { opacity: 1; transform: translateZ(14px) scale(1.05) translateX(0); filter: brightness(1.12) saturate(1.15); }
+}
+@keyframes knight-action-sway {
+  0%, 100% { transform: translateZ(14px) scale(1.05) rotate(-1deg); }
+  50% { transform: translateZ(14px) scale(1.08) rotate(1.5deg); }
+}
+@keyframes knight-cheer-sequence {
+  0%   { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); }
+  20%  { transform: perspective(800px) rotateY(-8deg) rotateX(4deg) scale(1.06); }
+  45%  { transform: perspective(800px) rotateY(8deg) rotateX(-4deg) scale(1.08); }
+  75%  { transform: perspective(800px) rotateY(-3deg) rotateX(2deg) scale(1.04); }
+  100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); }
+}
+@keyframes knight-epic-sequence {
+  0%   { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); }
+  18%  { transform: perspective(800px) rotateY(-12deg) rotateX(6deg) scale(1.1); }
+  45%  { transform: perspective(800px) rotateY(12deg) rotateX(-6deg) scale(1.14); }
+  75%  { transform: perspective(800px) rotateY(-4deg) rotateX(2deg) scale(1.05); }
+  100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); }
+}
+@keyframes knight-bubble-pop {
+  0% { opacity: 0; transform: translateY(14px) scale(0.72); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes knight-sparkle-float {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: translate(var(--sx, 0), var(--sy, -24px)) scale(0); }
+}
+
+@media print {
+  .mascot { display: none !important; }
+}

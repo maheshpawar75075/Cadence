@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Tab</title>
+  <meta name="referrer" content="no-referrer" />
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="newtab.css" />
+  <link rel="stylesheet" href="cadence-agent.css" />
+  <script>
+    /* Instant Frame-0 Wallpaper & Theme Bootstrapper */
+    (function() {
+      try {
+        var raw = localStorage.getItem("fl_pro_settings");
+        var p = raw ? JSON.parse(raw) : null;
+        var ts = p && p.themeSettings ? p.themeSettings : null;
+        var wpId = (ts && ts.wallpaperId) ? ts.wallpaperId : "dolomites_sunbeams_8k";
+        var customUrl = ts && ts.customWallpaperUrl ? ts.customWallpaperUrl : "";
+        var wpMap = {
+          "dolomites_sunbeams_8k": "Wallpaper/pexels-eberhardgross-12365962.jpg",
+          "alpine_lake_panorama_12k": "Wallpaper/jerry-kavan-F2UvQ-iIqqA-unsplash.jpg",
+          "golden_meadow_brook_12k": "Wallpaper/pexels-mattia-d-andrea-1351715572-25696415.jpg",
+          "vestrahorn_twilight_6k": "Wallpaper/pexels-eberhardgross-20459771.jpg",
+          "balos_lagoon_boat_8k": "Wallpaper/joshua-kettle-sKOBxEb6E-E-unsplash.jpg",
+          "geiranger_fjord_6k": "Wallpaper/pexels-enrique72-6415692.jpg",
+          "winnats_pass_sunrise_6k": "Wallpaper/grant-ritchie-x1w_Q78xNEY-unsplash.jpg",
+          "yosemite_half_dome_6k": "Wallpaper/pexels-laczadesign-17140515.jpg",
+          "yosemite_valley_vista_8k": "Wallpaper/pexels-stephen-leonardi-587681991-28610386.jpg",
+          "yosemite_autumn_lake_4k": "Wallpaper/jeremy-bishop-d3fZSXlJ3Ok-unsplash.jpg",
+          "na_pali_coast_6k": "Wallpaper/braden-jarvis-prSogOoFmkw-unsplash.jpg",
+          "hawaiian_sunset_peaks_8k": "Wallpaper/pexels-jess-vide-5007767.jpg",
+          "palm_infinity_reflection_8k": "Wallpaper/dan-freeman-wAn4RfmXtxU-unsplash.jpg",
+          "white_sand_shoreline_4k": "Wallpaper/nattu-adnan-Ai2TRdvI6gM-unsplash.jpg",
+          "keyhole_arch_sunset_8k": "Wallpaper/joshua-sortino-xZqr8WtYEJ0-unsplash.jpg",
+          "cinque_terre_twilight": "Wallpaper/anders-jilden-cYrMQA7a3Wc-unsplash.jpg",
+          "alpine_pass_trails": "Wallpaper/alexander-slattery-LI748t0BK8w-unsplash.jpg",
+          "alaskan_ice_fjord_6k": "Wallpaper/john-cobb-IE_sifhay7o-unsplash.jpg",
+          "alpine_sunburst_range_8k": "Wallpaper/pexels-jplenio-5735485.jpg",
+          "zion_canyon_falls_6k": "Wallpaper/wil-stewart-pHANr-CpbYM-unsplash.jpg",
+          "tatras_purple_dusk": "Wallpaper/stefan-stefancik--g7axSVst6Y-unsplash.jpg",
+          "pinnacle_wanderer": "Wallpaper/urban-vintage-78A265wPiO4-unsplash.jpg",
+          "autumn_mountain_valley_6k": "Wallpaper/pexels-ioannis-ioannidis-1565556-20054034.jpg",
+          "cypress_mountain_ridge_6k": "Wallpaper/pexels-urtimud-89-76108288-9161906.jpg",
+          "cloud_sea_summit_6k": "Wallpaper/pexels-trungnguyenphotog-5155161.jpg",
+          "sunset_prairie_silhouettes_8k": "Wallpaper/pexels-imadclicks-16088698.jpg",
+          "lavender_lake_twilight_6k": "Wallpaper/pexels-rinoadamo-35281884.jpg",
+          "emerald_lake_canopy": "Wallpaper/andreas-gucklhorn-mawU2PoJWfU-unsplash.jpg",
+          "midnight_foliage_6k": "Wallpaper/djordje-gajic-XpmBYWxDMdg-unsplash.jpg",
+          "taiga_expedition_8k": "Wallpaper/mikhail-pushkarev-XrSWzMOfe-k-unsplash.jpg",
+          "river_bend_wetlands_8k": "Wallpaper/pexels-john-callery-3749962-5620997.jpg",
+          "solitary_meadow_oak_8k": "Wallpaper/pexels-damir-31447507.jpg",
+          "poly_matrix_emerald_8k": "Wallpaper/logan-voss-mAlnGB7D6wU-unsplash.jpg",
+          "wooden_labyrinth_8k": "Wallpaper/nigel-hoare-lKW9bwqGwTw-unsplash.jpg"
+        };
+        if (wpId !== "custom" && wpId !== "none" && !wpMap[wpId]) {
+          wpId = "dolomites_sunbeams_8k";
+        }
+        var url = (wpId === "custom" && customUrl) ? customUrl : (wpMap[wpId] || "Wallpaper/pexels-eberhardgross-12365962.jpg");
+        var mode = ts && ts.themeMode ? ts.themeMode : "system";
+        var isDark = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (isDark) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+        if (wpId === "none") {
+          document.documentElement.style.setProperty("--boot-wallpaper", "none");
+          document.documentElement.classList.add("no-boot-wallpaper");
+        } else {
+          document.documentElement.style.setProperty("--boot-wallpaper", "url('" + url + "')");
+          document.documentElement.classList.remove("no-boot-wallpaper");
+          var fit = ts && ts.wallpaperFit ? ts.wallpaperFit : "cover";
+          document.documentElement.style.setProperty("--boot-wallpaper-fit", fit === "center" ? "auto" : fit);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style id="cadenceBootWallpaperStyle">
+    #cadenceWallpaperLayer {
+      background-image: var(--boot-wallpaper, url('Wallpaper/pexels-eberhardgross-12365962.jpg'));
+      background-size: var(--boot-wallpaper-fit, cover);
+      opacity: 1;
+    }
+    html.no-boot-wallpaper #cadenceWallpaperLayer {
+      background-image: none !important;
+      opacity: 0 !important;
+    }
+  </style>
+</head>
+<body class="has-wallpaper">
+
+  <!-- ── 4K Wallpaper Layer (GPU Accelerated, Perfect Centered Fit) ── -->
+  <div id="cadenceWallpaperContainer" class="cadence-wallpaper-container">
+    <div id="cadenceWallpaperLayer" class="cadence-wallpaper-layer"></div>
+    <div id="cadenceDimLayer" class="cadence-dim-layer"></div>
+  </div>
+
+  <!-- ── Top Navigation Bar (Default Chrome Style) ── -->
+  <header class="ntp-topbar">
+    <div class="ntp-top-left"></div>
+    <div class="ntp-top-right">
+      <a href="https://mail.google.com" class="ntp-top-link" target="_top">Gmail</a>
+      <a href="https://images.google.com" class="ntp-top-link" target="_top">Images</a>
+
+      <!-- ── 9-Dot Google Apps Launcher Button ── -->
+      <button class="ntp-icon-btn" id="appsMenuBtn" title="Google apps" aria-expanded="false" aria-haspopup="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+        </svg>
+      </button>
+
+      <!-- ── Google Account Avatar Button ── -->
+      <button class="ntp-avatar-btn" id="accountMenuBtn" title="Google Account" aria-expanded="false" aria-haspopup="true">
+        <div class="ntp-avatar">M</div>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── 9-Dot Google Apps Dropdown Modal ── -->
+  <div class="ntp-dropdown" id="appsMenuDropdown" aria-hidden="true">
+    <div class="apps-grid-scroll">
+      <div class="apps-grid" id="googleAppsGrid">
+        <!-- Generated by JS -->
+      </div>
+      <div class="apps-divider"></div>
+      <a href="https://about.google/products/" target="_blank" class="apps-more-btn">
+        More from Google
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Authentic Google Account Dropdown Modal ── -->
+  <div class="ntp-dropdown ntp-account-dropdown" id="accountMenuDropdown" aria-hidden="true">
+    <div class="google-acc-card">
+      <div class="google-acc-avatar-wrap">
+        <div class="google-acc-avatar" id="googleAccAvatar">M</div>
+        <div class="google-acc-avatar-badge" title="Google Account">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="google-acc-details">
+        <div class="google-acc-name" id="googleAccName">Mahesh Pawar</div>
+        <div class="google-acc-email" id="googleAccEmail">maheshpawar@gmail.com</div>
+      </div>
+      <a href="https://myaccount.google.com" target="_blank" class="google-acc-manage-btn">
+        Manage your Google Account
+      </a>
+    </div>
+
+    <div class="google-acc-menu-list">
+      <a href="https://accounts.google.com/AddSession" target="_blank" class="google-acc-menu-item">
+        <span class="google-acc-item-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </span>
+        <span class="google-acc-item-text">Add another account</span>
+      </a>
+
+      <a href="https://accounts.google.com/Logout" target="_blank" class="google-acc-menu-item">
+        <span class="google-acc-item-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+        </span>
+        <span class="google-acc-item-text">Sign out</span>
+      </a>
+    </div>
+
+    <div class="google-acc-footer">
+      <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>
+      <span class="google-acc-dot">•</span>
+      <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a>
+    </div>
+  </div>
+
+  <!-- ── Main Google Hero Workspace ── -->
+  <main class="ntp-main">
+    <!-- Authentic Google Logo -->
+    <div class="ntp-logo-wrap" id="ntpLogoWrap">
+      <h1 class="ntp-logo" aria-label="Google">
+        <span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span>
+      </h1>
+    </div>
+
+    <!-- Google Omnibox Search Container -->
+    <div class="ntp-search-container" id="searchContainer">
+      <div class="ntp-search-wrap">
+        <form class="ntp-searchbar" id="searchForm" action="https://www.google.com/search" method="GET">
+          <span class="search-prefix-icon">
+            <svg focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </span>
+          <input
+            type="text"
+            name="q"
+            id="searchInput"
+            class="ntp-search-input"
+            placeholder="Search Google or type a URL"
+            autocomplete="off"
+            autofocus
+          />
+          <div class="search-suffix-icons">
+            <button type="button" class="icon-btn" id="voiceSearchBtn" title="Search by voice">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+            </button>
+            <button type="button" class="icon-btn" id="lensSearchBtn" title="Search by image (Google Lens)">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6m0-2a5 5 0 1 1 0 10 5 5 0 0 1 0-10m6.5-3H17l-1.5-2h-7L7 4H5.5C4.12 4 3 5.12 3 6.5v11C3 18.88 4.12 20 5.5 20h13c1.38 0 2.5-1.12 2.5-2.5v-11C21 5.12 19.88 4 18.5 4z"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+        <!-- Auto-complete live dropdown -->
+        <div class="ntp-suggestions" id="ntpSuggestions"></div>
+      </div>
+    </div>
+
+    <!-- Cadence Ambient Micro-Coach Bar -->
+    <div class="cadence-ambient-bar" id="cadenceAmbientBar" aria-label="Cadence Executive Focus Prompt">
+      <div class="ambient-bar-content" id="cadenceAmbientClickArea" title="Click to view details or talk with Cadence">
+        <span class="ambient-pulse-orb" id="ambientPulseOrb"></span>
+        <span class="ambient-text" id="cadenceAmbientText">⚡ Loading daily executive priority...</span>
+      </div>
+      <div class="ambient-bar-actions">
+        <button type="button" class="ambient-action-btn" id="ambientActionBtn" title="Execute next priority">⚡ Mark Done</button>
+        <button type="button" class="ambient-talk-btn" id="ambientTalkBtn" title="Talk to Cadence AI Coach">🎙️</button>
+      </div>
+    </div>
+
+    <!-- Minimalist Shortcuts Grid (Curated Sites + Add Card) -->
+    <div class="ntp-shortcuts" id="ntpShortcuts">
+      <!-- Generated by JS -->
+    </div>
+  </main>
+
+  <!-- ── Bottom Navigation Control Dock (Horizontal Glassmorphic Bar) ── -->
+  <div class="ntp-bottom-dock" id="ntpBottomDock" role="toolbar" aria-label="Controls">
+    <!-- 1. Tracker -->
+    <button type="button" class="dock-btn dock-btn--tracker" id="dockTrackerBtn" title="Daily Tasks & Habit Tracker" aria-label="Tracker">
+      <div class="dock-badge dock-badge--tracker">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
+          <polyline points="8 12 11 15 16 9"></polyline>
+        </svg>
+      </div>
+      <span class="dock-btn-label">Tracker</span>
+      <span class="dock-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+      <div class="dock-wave"></div>
+    </button>
+
+    <!-- 2. Cadence AI -->
+    <button type="button" class="dock-btn dock-btn--ai" id="dockAiBtn" title="Cadence AI Coach" aria-label="Cadence AI">
+      <div class="dock-badge dock-badge--ai">
+        <div class="dock-ai-orb">
+          <span class="dock-ai-orb-core"></span>
+        </div>
+        <svg class="dock-ai-sparkle" viewBox="0 0 24 24" width="13" height="13" fill="#ffffff">
+          <path d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z"/>
+        </svg>
+      </div>
+      <span class="dock-btn-label">Cadence AI</span>
+      <span class="dock-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+      <div class="dock-wave"></div>
+    </button>
+
+    <!-- 3. Notes -->
+    <button type="button" class="dock-btn dock-btn--notes" id="dockNotesBtn" title="Notes & Reminders (N)" aria-label="Notes">
+      <div class="dock-badge dock-badge--notes">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="8" y1="13" x2="16" y2="13"></line>
+          <line x1="8" y1="17" x2="13" y2="17"></line>
+        </svg>
+      </div>
+      <span class="dock-btn-label">Notes</span>
+      <span class="dock-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+      <div class="dock-wave"></div>
+    </button>
+
+    <!-- 4. Zen -->
+    <button type="button" class="dock-btn dock-btn--zen" id="dockZenBtn" title="Toggle Zen Mode (Z)" aria-label="Zen">
+      <div class="dock-badge dock-badge--zen">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12 3.2c-1.1 3.2-1.3 6.6 0 10 1.3-3.4 1.1-6.8 0-10zm-2.2 4.4c-2.6 1.1-4.4 3.5-4.2 6.8 2.4.2 5-1.1 6.4-3.6-1-1.2-1.6-2.2-2.2-3.2zm4.4 0c-.6 1-1.2 2-2.2 3.2 1.4 2.5 4 3.8 6.4 3.6.2-3.3-1.6-5.7-4.2-6.8z"/>
+        </svg>
+      </div>
+      <span class="dock-btn-label">Zen</span>
+      <span class="dock-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+      <div class="dock-wave"></div>
+    </button>
+
+    <!-- 5. Customize -->
+    <button type="button" class="dock-btn dock-btn--customize" id="customizeBtn" title="Customize Wallpaper & Themes" aria-label="Customize">
+      <div class="dock-badge dock-badge--customize">
+        <svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+      </div>
+      <span class="dock-btn-label">Customize</span>
+      <span class="dock-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </span>
+      <div class="dock-wave"></div>
+    </button>
+  </div>
+
+  <!-- ── Zen Mode Overlay ── -->
+  <div class="cadence-zen-view" id="cadenceZenView" aria-hidden="true">
+    <div class="zen-time" id="zenTime">--:--</div>
+    <div class="zen-date" id="zenDate">Monday, September 26</div>
+    <div class="zen-hint">Press <kbd>Z</kbd> or double-click to exit Zen Mode</div>
+  </div>
+
+  <!-- ── Cadence Refined Notes & Scratchpad Panel ── -->
+  <div class="cadence-scratchpad-panel" id="cadenceScratchpadPanel" aria-hidden="true">
+    <!-- Clean Unified Executive Header -->
+    <div class="scratchpad-header">
+      <div class="scratchpad-tabs" role="tablist">
+        <button type="button" class="scratchpad-tab active" id="scratchpadTabToday" data-tab="today" role="tab" aria-selected="true" title="Today's fresh scratchpad">
+          <span>Today</span>
+          <span class="scratchpad-tab-date" id="scratchpadTodayDateBadge"></span>
+        </button>
+        <button type="button" class="scratchpad-tab" id="scratchpadTabPinned" data-tab="pinned" role="tab" aria-selected="false" title="Pinned brain dump">
+          <span>Pinned</span>
+        </button>
+      </div>
+
+      <div class="scratchpad-header-actions">
+        <button type="button" class="scratchpad-tool-icon" id="noteToolCheckbox" title="Insert checklist checkbox (- [ ])" aria-label="Task Checkbox">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        </button>
+        <button type="button" class="scratchpad-tool-icon" id="noteToolTimestamp" title="Insert timestamp (Shift+Click for date)" aria-label="Time Stamp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </button>
+        <button type="button" class="scratchpad-tool-icon" id="noteToolViewToggle" title="Toggle interactive checklist" aria-label="Toggle Checklist View">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+        <button type="button" class="scratchpad-tool-icon scratchpad-tool-icon--reminder" id="noteToolReminder" title="Set a reminder" aria-label="Set Reminder">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+          <span class="reminder-badge" id="noteReminderBadge" style="display:none;">0</span>
+        </button>
+        <button type="button" class="scratchpad-tool-icon" id="noteToolCopy" title="Copy note" aria-label="Copy Note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+        </button>
+        <button type="button" class="scratchpad-tool-icon" id="scratchpadHistoryBtn" title="Past daily notes" aria-label="History">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>
+        </button>
+        <div class="scratchpad-sep"></div>
+        <button type="button" class="scratchpad-tool-icon" id="scratchpadExpandBtn" title="Toggle size" aria-label="Toggle Size">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+        </button>
+        <button type="button" class="scratchpad-tool-icon scratchpad-tool-icon--close" id="closeScratchpadBtn" title="Close (Esc)" aria-label="Close">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Note Reminders Popover -->
+    <div class="scratchpad-reminder-popover" id="noteReminderPopover" aria-hidden="true" style="display:none;">
+      <div class="reminder-popover-header">
+        <span class="reminder-popover-title">⏰ Set Reminder</span>
+        <button type="button" class="reminder-popover-close" id="closeNoteReminderBtn" title="Close">✕</button>
+      </div>
+      <div class="reminder-popover-body">
+        <input type="text" class="reminder-input" id="reminderTextInput" placeholder="Reminder topic or task..." maxlength="120" />
+        
+        <div class="reminder-presets">
+          <button type="button" class="reminder-preset-btn" data-minutes="15">+15m</button>
+          <button type="button" class="reminder-preset-btn" data-minutes="30">+30m</button>
+          <button type="button" class="reminder-preset-btn" data-minutes="60">+1h</button>
+          <button type="button" class="reminder-preset-btn" data-preset="tomorrow-9am">Tomorrow 9 AM</button>
+        </div>
+
+        <div class="reminder-custom-row">
+          <input type="time" class="reminder-time-input" id="reminderCustomTime" />
+          <button type="button" class="reminder-schedule-btn" id="scheduleCustomReminderBtn">Set</button>
+        </div>
+
+        <div class="reminder-active-section">
+          <div class="reminder-active-title">Upcoming Reminders</div>
+          <div class="reminder-active-list" id="noteActiveRemindersList">
+            <div class="reminder-empty-state">No scheduled reminders</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Daily Notes History Popover -->
+    <div class="scratchpad-history-popover" id="noteHistoryPopover" aria-hidden="true" style="display:none;">
+      <div class="history-popover-header">
+        <span class="history-popover-title">📅 Past Notes</span>
+        <button type="button" class="history-popover-close" id="closeNoteHistoryBtn">✕</button>
+      </div>
+      <div class="history-popover-list" id="noteHistoryList">
+        <div class="history-empty-state">No previous daily notes yet</div>
+      </div>
+    </div>
+
+    <!-- Editor Body -->
+    <div class="scratchpad-body">
+      <textarea id="scratchpadInput" class="scratchpad-textarea" placeholder="Write thoughts, priorities, or - [ ] tasks..."></textarea>
+      <div id="scratchpadPreview" class="scratchpad-preview" style="display: none;" aria-hidden="true"></div>
+    </div>
+
+    <!-- Refined Minimal Footer -->
+    <div class="scratchpad-footer">
+      <div class="scratchpad-footer-left">
+        <span class="scratchpad-stats" id="scratchpadStats">0 words</span>
+        <span class="scratchpad-checklist-pill" id="scratchpadChecklistProgress" style="display:none;">0/0</span>
+      </div>
+      <div class="scratchpad-footer-right">
+        <span class="scratchpad-clock" id="scratchpadClock" title="Current live time">--:--</span>
+        <span class="scratchpad-saved" id="scratchpadSaved">Saved</span>
+        <button type="button" class="scratchpad-clear-btn" id="scratchpadClearBtn" title="Clear note" aria-label="Clear note">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Cadence Shareable Achievement Badge Modal ── -->
+  <div class="modal-overlay" id="cadenceRecapModalOverlay" aria-hidden="true">
+    <div class="cadence-recap-modal">
+      <div class="recap-header">
+        <span>🏆 Cadence Performance Badge</span>
+        <button type="button" class="recap-close-btn" id="closeRecapModalBtn">✕</button>
+      </div>
+      <div class="recap-card-preview" id="recapCardPreview">
+        <div class="recap-brand">CADENCE PRO EXECUTIVE</div>
+        <div class="recap-streak-num" id="recapStreakNum">14</div>
+        <div class="recap-streak-label">DAY STREAK MAINTAINED</div>
+        <div class="recap-stats-row">
+          <div class="recap-stat-box">
+            <span class="recap-stat-val" id="recapDailyScore">100%</span>
+            <span class="recap-stat-lbl">TODAY'S EXECUTION</span>
+          </div>
+          <div class="recap-stat-box">
+            <span class="recap-stat-val" id="recapFocusSprints">14</span>
+            <span class="recap-stat-lbl">DEEP WORK SPRINTS</span>
+          </div>
+        </div>
+        <div class="recap-tagline">"Discipline equals freedom. Relentless execution beats passive intention."</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn primary" id="copyRecapTextBtn" style="width:100%;">📋 Copy Achievement Summary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Keyboard Shortcuts Help Modal ── -->
+  <div class="modal-overlay" id="shortcutsHelpOverlay" aria-hidden="true">
+    <div class="shortcut-help-modal">
+      <div class="recap-header">
+        <span>⚡ Cadence Quick Hotkeys</span>
+        <button type="button" class="recap-close-btn" id="closeShortcutsHelpBtn">✕</button>
+      </div>
+      <div class="shortcut-list">
+        <div class="shortcut-item"><kbd>Z</kbd><span>Toggle Zen Mode (Clean Aesthetic Clock)</span></div>
+        <div class="shortcut-item"><kbd>1</kbd> - <kbd>9</kbd><span>Instantly complete Habit #1 to #9</span></div>
+        <div class="shortcut-item"><kbd>Space</kbd><span>Start / Pause Focus Sprint</span></div>
+        <div class="shortcut-item"><kbd>N</kbd><span>Toggle Notes, Checklists &amp; Reminders</span></div>
+        <div class="shortcut-item"><kbd>C</kbd><span>Talk to Cadence AI Coach</span></div>
+        <div class="shortcut-item"><kbd>T</kbd><span>Open Daily Habits &amp; Tasks</span></div>
+        <div class="shortcut-item"><kbd>?</kbd><span>Show this Keyboard Guide</span></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn primary" id="confirmShortcutsHelpBtn" style="width:100%;">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Performance & Habit Tracker Floating Modal ── -->
+  <div class="cadence-tracker-overlay" id="cadenceTrackerOverlay" aria-hidden="true">
+    <div class="cadence-tracker-backdrop" id="cadenceTrackerBackdrop"></div>
+    <div class="cadence-tracker-modal" id="cadenceTrackerModal" role="dialog" aria-modal="true" aria-label="Daily Tasks & Habits">
+      <div class="cadence-tracker-modal-header">
+        <div class="tracker-header-title">
+          <span class="tracker-header-dot"></span>
+          <span class="tracker-header-text">Daily Tasks &amp; Habits</span>
+        </div>
+        <div class="tracker-header-actions">
+          <a href="dashboard.html" class="tracker-full-link" title="Open Full Dashboard in New Tab" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>Full Hub</span>
+          </a>
+          <button type="button" class="tracker-close-btn" id="closeTrackerModalBtn" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="cadence-tracker-frame-wrap">
+        <iframe src="popup.html" id="cadenceTrackerIframe" class="cadence-tracker-iframe" title="Daily Tasks &amp; Habits"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Add / Edit Shortcut Modal ── -->
+  <div class="modal-overlay" id="shortcutModalOverlay">
+    <div class="shortcut-modal">
+      <div class="shortcut-modal-title" id="shortcutModalTitle">Add shortcut</div>
+      <form id="shortcutForm">
+        <label class="modal-label">
+          <span>Name</span>
+          <input type="text" id="shortcutNameInput" class="modal-input" placeholder="e.g. Netflix" required />
+        </label>
+        <label class="modal-label">
+          <span>URL</span>
+          <input type="url" id="shortcutUrlInput" class="modal-input" placeholder="e.g. https://netflix.com" required />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn secondary" id="cancelShortcutBtn">Cancel</button>
+          <button type="submit" class="modal-btn primary" id="saveShortcutBtn">Done</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Wallpaper & Theme Customizer Drawer ── -->
+  <div class="wp-panel-overlay" id="wpPanelOverlay"></div>
+  <aside class="wp-panel" id="wpPanel" aria-hidden="true">
+    <div class="wp-panel-header">
+      <div class="wp-panel-title-wrap">
+        <span class="wp-panel-title">🎨 4K &amp; 8K Wallpaper &amp; Theme Studio</span>
+        <span class="wp-panel-sub">4K &amp; 8K Ultra HD gallery, theme styling &amp; contrast</span>
+      </div>
+      <button class="wp-panel-close" id="closePanelBtn" title="Close panel">✕</button>
+    </div>
+
+    <!-- Wallpaper Presets -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">Ultra HD Environments</span>
+      <span class="wp-section-hint">Instant 1-click change</span>
+    </div>
+
+    <!-- Category filter pills -->
+    <div class="wp-category-filters" id="ntpWpCategoryFilters" style="display:flex; gap:6px; flex-wrap:wrap; padding: 0 20px 12px 20px;">
+      <button type="button" class="wp-cat-pill active" data-cat="all">All</button>
+      <button type="button" class="wp-cat-pill" data-cat="My Uploads">📁 My Uploads</button>
+      <button type="button" class="wp-cat-pill" data-cat="8K Ultra HD">✨ 8K &amp; 12K</button>
+      <button type="button" class="wp-cat-pill" data-cat="Mountain & Wilderness">🏔️ Mountains</button>
+      <button type="button" class="wp-cat-pill" data-cat="Ocean & Seascape">🌊 Ocean</button>
+      <button type="button" class="wp-cat-pill" data-cat="Forest & Nature">🌲 Nature</button>
+      <button type="button" class="wp-cat-pill" data-cat="Sunset & Golden Hour">🌅 Golden Hour</button>
+      <button type="button" class="wp-cat-pill" data-cat="Architecture & Abstract">🏛️ Abstract</button>
+    </div>
+
+    <div class="wp-panel-grid" id="wpPickerGrid"></div>
+
+    <!-- Custom Image Upload & URL -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">Upload Your Own Wallpaper</span>
+      <span class="wp-section-hint">Ultra HD 4K &amp; 8K ready</span>
+    </div>
+    <div class="wp-custom-panel" id="ntpCustomWpPanel" style="padding: 0 20px 12px 20px;">
+      <div class="wp-dropzone" id="ntpDropzone">
+        <input type="file" id="ntpCustomFile" accept="image/*" style="display:none" />
+        <div class="wp-dropzone-icon">📁</div>
+        <div class="wp-dropzone-title">Drag &amp; drop your wallpaper here</div>
+        <div class="wp-dropzone-sub">or <button type="button" class="wp-browse-btn" id="ntpUploadBtn">Choose Image File</button></div>
+        <div class="wp-dropzone-specs">Supports JPG, PNG, WEBP • Auto-optimized for instant 4K loading</div>
+      </div>
+      <div class="wp-url-row" style="margin-top: 10px;">
+        <input type="url" id="ntpCustomUrlInput" placeholder="Or paste direct image URL (https://...)" class="wp-url-input" />
+        <button type="button" id="ntpCustomUrlBtn" class="wp-url-btn">Apply</button>
+      </div>
+
+      <!-- User Uploaded Wallpapers Gallery -->
+      <div class="wp-user-uploads-wrap" id="ntpUserUploadsWrap" style="margin-top: 14px; display: none;">
+        <div class="wp-uploads-head">
+          <span class="wp-sub-label">My Uploaded Wallpapers</span>
+          <button type="button" class="wp-clear-uploads-btn" id="ntpClearUploadsBtn" title="Remove all uploaded wallpapers">Clear All</button>
+        </div>
+        <div class="wp-user-gallery" id="ntpUserGallery"></div>
+      </div>
+    </div>
+
+    <!-- Wallpaper Display Fit -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">Wallpaper Display Fit</span>
+      <span class="wp-section-hint">Aspect ratio &amp; sizing</span>
+    </div>
+    <div class="wp-fit-group" id="ntpFitGroup" style="padding: 0 20px 12px 20px; display:flex; gap:8px;">
+      <button type="button" class="wp-fit-btn active" data-fit="cover" title="Fill entire screen">🖼️ Fill Screen</button>
+      <button type="button" class="wp-fit-btn" data-fit="contain" title="Fit entire image with blurred background">🔍 Fit Entire</button>
+      <button type="button" class="wp-fit-btn" data-fit="center" title="Centered 1:1 scale">🎯 Center</button>
+    </div>
+
+    <!-- One-Click Atmosphere Presets -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">One-Click Tone Presets</span>
+      <span class="wp-section-hint">Instant atmospheric mood</span>
+    </div>
+    <div class="wp-preset-chips" id="ntpPresetChips" style="padding: 0 20px 12px 20px; display:flex; gap:6px; flex-wrap:wrap;">
+      <button type="button" class="wp-preset-chip" data-preset="natural">🌟 Natural</button>
+      <button type="button" class="wp-preset-chip" data-preset="cinematic">🎬 Cinematic</button>
+      <button type="button" class="wp-preset-chip" data-preset="noir">☕ Moody B&amp;W</button>
+      <button type="button" class="wp-preset-chip" data-preset="warm">🌅 Warm Sunset</button>
+      <button type="button" class="wp-preset-chip" data-preset="nordic">❄️ Nordic Frost</button>
+      <button type="button" class="wp-preset-chip" data-preset="soft">🌫️ Soft Focus</button>
+    </div>
+
+    <!-- Harmonize Theme Color Palette -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">Harmonize Theme Palette</span>
+      <span class="wp-section-hint">Match UI accent with wallpaper</span>
+    </div>
+    <div class="wp-palette-chips" id="ntpPaletteChips" style="padding: 0 20px 12px 20px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+    <!-- Advanced Pro Atmosphere Switches -->
+    <div class="wp-section-head">
+      <span class="wp-section-label">⚡ Advanced Atmosphere</span>
+    </div>
+    <div class="wp-custom-switches" style="padding: 0 20px 14px 20px; display:flex; flex-direction:column; gap:10px;">
+      <label style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:13px; font-weight:500; color:rgba(255,255,255,0.9);">
+        <span>🌅 Dynamic Time-of-Day Shift</span>
+        <input type="checkbox" id="ntpDynamicTimeShiftToggle" style="accent-color:#6C5CE7; width:18px; height:18px; cursor:pointer;" />
+      </label>
+    </div>
+
+    <!-- Fine Tuning & Contrast Controls -->
+    <div class="wp-section-head" style="display:flex; justify-content:space-between; align-items:center;">
+      <span class="wp-section-label">Atmosphere &amp; Contrast FX</span>
+      <button type="button" id="ntpResetFxBtn" class="wp-reset-link" style="background:none; border:none; color:#a5b4fc; font-size:11.5px; cursor:pointer; font-weight:600;">Reset FX</button>
+    </div>
+    <div class="wp-panel-sliders">
+      <div class="slider-row">
+        <div class="slider-info">
+          <span>Wallpaper Blur</span>
+          <span id="ntpBlurVal" class="slider-val">0px</span>
+        </div>
+        <input type="range" id="ntpBlurSlider" min="0" max="25" value="0" />
+      </div>
+      <div class="slider-row">
+        <div class="slider-info">
+          <span>Dark Dimming</span>
+          <span id="ntpDimVal" class="slider-val">0%</span>
+        </div>
+        <input type="range" id="ntpDimSlider" min="0" max="85" value="0" />
+      </div>
+      <div class="slider-row">
+        <div class="slider-info">
+          <span>Brightness</span>
+          <span id="ntpBrightnessVal" class="slider-val">100%</span>
+        </div>
+        <input type="range" id="ntpBrightnessSlider" min="50" max="150" value="100" />
+      </div>
+      <div class="slider-row">
+        <div class="slider-info">
+          <span>Contrast</span>
+          <span id="ntpContrastVal" class="slider-val">100%</span>
+        </div>
+        <input type="range" id="ntpContrastSlider" min="70" max="150" value="100" />
+      </div>
+      <div class="slider-row">
+        <div class="slider-info">
+          <span>Color Saturation</span>
+          <span id="ntpSatVal" class="slider-val">100%</span>
+        </div>
+        <input type="range" id="ntpSatSlider" min="0" max="180" value="100" />
+      </div>
+    </div>
+  </aside>
+
+  <!-- Core Scripts (Optimized for instant page load) -->
+  <script src="lib/data.js"></script>
+  <script src="lib/pro-catalog.js"></script>
+  <script src="lib/audio.js"></script>
+  <script src="lib/theme.js"></script>
+  <script src="lib/billing.js"></script>
+  <script src="lib/suggestions.js"></script>
+  <script src="common.js"></script>
+  <script src="cadence-agent.js"></script>
+  <script src="newtab.js"></script>
+</body>
+</html>

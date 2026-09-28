@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Cadence — Dashboard</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="dashboard.css" />
+<link rel="stylesheet" href="mascot.css" />
+<link rel="stylesheet" href="cadence-agent.css" />
+</head>
+<body>
+<div id="app">
+
+  <aside class="sidebar no-print">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <div>
+        <div class="brand-title">Cadence</div>
+        <div class="brand-sub">DAILY COMPANION</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-section="overview" aria-label="Today">Today</button>
+      <button class="nav-item" data-section="habits" aria-label="Habits">Habits</button>
+      <button class="nav-item" data-section="reports" aria-label="Insights">Insights</button>
+      <button class="nav-item" data-section="pro" aria-label="Pro">Pro</button>
+      <button class="nav-item" data-section="settings" aria-label="Settings">Settings</button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="mini-stat">
+        <span id="sideStreak">0</span>
+        <label>day best streak</label>
+      </div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <header class="topheader no-print">
+      <div>
+        <div class="eyebrow" id="greeting">Welcome back</div>
+        <h1 id="sectionTitle">Overview</h1>
+      </div>
+      <div class="header-right" id="headerRight">
+        <button id="dashCadenceAiBtn" class="btn btn-secondary" type="button">Cadence</button>
+        <button type="button" class="btn btn-ghost pro-status-badge" id="proStatusBadge" title="Open Pro">Pro</button>
+        <button id="themeToggleBtn" class="icon-btn theme-toggle-btn" type="button" aria-label="Toggle color theme">Theme</button>
+      </div>
+    </header>
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="view active" id="view-overview">
+      <div class="stat-cards">
+        <div class="stat-card grad-violet">
+          <div class="stat-label">Today's Performance</div>
+          <div class="stat-value" id="statToday">0%</div>
+          <div class="stat-sub" id="statTodaySub">0 of 0 completed</div>
+        </div>
+        <div class="stat-card grad-teal">
+          <div class="stat-label">Weekly Average</div>
+          <div class="stat-value" id="statWeek">0%</div>
+          <div class="stat-sub" id="statWeekSub">this week</div>
+        </div>
+        <div class="stat-card grad-amber">
+          <div class="stat-label">Best Streak</div>
+          <div class="stat-value" id="statStreak">0</div>
+          <div class="stat-sub">consecutive days</div>
+        </div>
+        <div class="stat-card grad-pink">
+          <div class="stat-label">Perfect Days</div>
+          <div class="stat-value" id="statPerfect">0</div>
+          <div class="stat-sub">this week</div>
+        </div>
+      </div>
+
+      <!-- AI Productivity Intelligence Panel -->
+      <div class="ai-coach-panel">
+        <div class="ai-coach-header">
+          <div class="ai-coach-title-wrap">
+            <span class="ai-coach-icon">⚡</span>
+            <div>
+              <h3 class="ai-coach-title">Productivity Intelligence</h3>
+              <div class="ai-coach-sub">Real-time habit telemetry &amp; smart scheduling insights</div>
+            </div>
+          </div>
+          <div class="ai-coach-actions">
+            <button id="dashTalkCadenceBtn" class="dash-talk-cadence-btn" type="button">🎙️ Talk to Cadence</button>
+            <span class="ai-powered-pill">AI POWERED</span>
+          </div>
+        </div>
+        <div id="aiInsightsContainer" class="ai-insights-container">
+          <!-- AI Insights dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Daily Motivational Mindset Banner -->
+      <div id="dashDailyQuoteCard" class="dash-daily-quote-card" title="Click for new daily motivation ✨">
+        <div class="dash-quote-left">
+          <span class="dash-quote-icon">🧘</span>
+          <div>
+            <div class="dash-quote-kicker">Daily Executive Wisdom</div>
+            <div id="dashQuoteText" class="dash-quote-text">"We are what we repeatedly do. Excellence, then, is not an act, but a habit." — Aristotle</div>
+          </div>
+        </div>
+        <button id="dashRefreshQuoteBtn" class="dash-refresh-quote-btn" type="button">
+          <span class="refresh-ic">🔄</span>
+          <span>New Quote</span>
+        </button>
+      </div>
+
+      <!-- Daily & Weekly Progress Hub -->
+      <div class="progress-hub">
+        <div class="progress-panel progress-panel--daily">
+          <div class="progress-panel-top">
+            <div class="progress-panel-info">
+              <span class="progress-tag progress-tag--daily">Daily</span>
+              <h2>Today's Progress</h2>
+              <p class="progress-sub" id="dailyProgressSub">0 of 0 habits done</p>
+            </div>
+            <div id="dailyGauge" class="gauge-slot"></div>
+          </div>
+          <div class="progress-section-label">By category</div>
+          <div id="dailyCategoryBars"></div>
+          <div class="progress-section-label">Habit breakdown</div>
+          <div id="dailyHabitBars" class="habit-progress-list"></div>
+        </div>
+
+        <div class="progress-panel progress-panel--weekly">
+          <div class="progress-panel-top">
+            <div class="progress-panel-info">
+              <span class="progress-tag progress-tag--weekly">Weekly</span>
+              <h2>This Week</h2>
+              <p class="progress-sub" id="weeklyProgressSub">0 of 0 completed</p>
+            </div>
+            <div id="weeklyGauge" class="gauge-slot"></div>
+          </div>
+          <div class="progress-section-label">7-day completion</div>
+          <div id="weeklyMiniChart" class="week-chart-slot"></div>
+          <div class="progress-section-label">Category totals</div>
+          <div id="weeklyCategoryBars"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3>This Week</h3>
+            <div class="legend" id="weekLegend"></div>
+          </div>
+          <div id="weekChart" class="chart-holder"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Category Balance</h3></div>
+          <div id="donutChart" class="chart-holder donut-holder"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>30-Day Trend</h3></div>
+          <div id="trendChart" class="chart-holder"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3 id="heatmapTitle">Month Heatmap</h3>
+            <div class="month-nav-mini no-print">
+              <button id="heatPrev" class="icon-btn">‹</button>
+              <button id="heatNext" class="icon-btn">›</button>
+            </div>
+          </div>
+          <div id="heatmapChart" class="chart-holder"></div>
+        </div>
+      </div>
+
+      <div class="card insight-card">
+        <div class="insight-icon">💡</div>
+        <div>
+          <h3>Weekly Insight</h3>
+          <p id="insightText">Add a few habits to see personalized insights here.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>All Habits — Today</h3></div>
+        <div id="habitTable" class="habit-table"></div>
+      </div>
+    </section>
+
+    <!-- ============ HABITS ============ -->
+    <section class="view" id="view-habits">
+      <!-- Ready-Made Daily Task Packs Banner -->
+      <div class="card packs-banner-card">
+        <div class="card-head packs-banner-head">
+          <div>
+            <h3 class="packs-banner-title">
+              <span>✨</span>
+              <span>Ready-Made Day-to-Day Task Packs</span>
+            </h3>
+            <p class="muted packs-banner-sub">1-click add scientifically backed daily routines that fit everyone's productivity &amp; wellness goals.</p>
+          </div>
+          <div class="packs-banner-actions">
+            <button class="btn btn-secondary" id="restoreDefaultsBtn" title="Reset to essential daily habits">⚡ Restore Default Habits</button>
+          </div>
+        </div>
+        <div id="readyMadePacksGrid" class="ready-made-packs-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head habits-list-header">
+          <div>
+            <h3>Your Active Daily Habits</h3>
+            <div class="dash-active-timeslot" id="dashActiveTimeSlotText">🌅 Current Focus Window: Morning</div>
+          </div>
+          <div class="habits-header-controls">
+            <!-- Time-of-Day Filter Pills -->
+            <div class="time-filter-pill-group" id="dashTimeFilterPillGroup">
+              <button type="button" class="dash-time-pill active" data-slot="all">All</button>
+              <button type="button" class="dash-time-pill" data-slot="morning">🌅 Morning</button>
+              <button type="button" class="dash-time-pill" data-slot="afternoon">☀️ Afternoon</button>
+              <button type="button" class="dash-time-pill" data-slot="evening">🌆 Evening</button>
+            </div>
+            <button class="btn btn-pro-glow" id="startFocusSprintBtn" title="1-Click Sprint with Ambient Soundscape">🚀 Focus Flow Sprint</button>
+            <button class="btn btn-primary" id="addHabitBtn">+ Custom Habit</button>
+          </div>
+        </div>
+        <div id="habitsList" class="habits-manage-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ PRO PLAN SUITE ============ -->
+    <section class="view" id="view-pro">
+      <!-- Pro Plan VIP Hero Banner -->
+      <div class="pro-hero-banner">
+        <div class="pro-hero-left">
+          <div class="pro-badge-group">
+            <span class="pro-crown-badge">⚡ CADENCE PRO SUITE</span>
+            <span class="pro-plan-pill" id="proTierPill">Executive Lifetime Access</span>
+          </div>
+          <h2>Master Your Daily Performance with 4K Studio &amp; Pro Perks</h2>
+          <p class="pro-hero-sub">4K Ultra HD environments, precision telemetry, binaural focus soundscapes, executive mentors, and streak freeze protection.</p>
+          <div class="pro-stat-strip">
+            <div class="pro-stat-item">
+              <span class="pro-stat-val" id="proStreakShieldsVal">🛡️ 3</span>
+              <span class="pro-stat-lbl">Streak Shields Active</span>
+            </div>
+            <div class="pro-stat-divider"></div>
+            <div class="pro-stat-item">
+              <span class="pro-stat-val" id="proMultiplierVal">⚡ 1.5x</span>
+              <span class="pro-stat-lbl">XP Bonus Multiplier</span>
+            </div>
+            <div class="pro-stat-divider"></div>
+            <div class="pro-stat-item">
+              <span class="pro-stat-val" id="proFocusCountVal">⏱️ 14</span>
+              <span class="pro-stat-lbl">Focus Sessions Done</span>
+            </div>
+          </div>
+        </div>
+        <div class="pro-hero-right">
+          <div class="pro-card-preview-box">
+            <div class="pro-active-theme-chip" id="proHeroActiveThemeChip">🎨 Obsidian Minimal</div>
+            <div class="pro-companion-mini-badge" id="proHeroCompanionBadge">⚔️ Star Knight</div>
+            <div class="pro-hero-actions">
+              <button class="btn btn-pro-glow" id="claimShieldBtn">🛡️ Claim Free Weekly Shield</button>
+              <button class="btn btn-secondary" id="proManageSubBtn" style="display:none; font-size:12px; margin-top:8px;">⚙️ Manage Stripe Subscription</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- SECTION: STRIPE PRICING PLANS & REGIONAL GATEWAY                  -->
+      <!-- ================================================================= -->
+      <div class="pro-section-card stripe-pricing-section" id="stripePricingSection">
+        <div class="pro-section-header stripe-header-row">
+          <div>
+            <div class="pro-tag-badge">STRIPE PAYMENT GATEWAY</div>
+            <h3>Upgrade to Cadence Pro</h3>
+            <p class="muted">Instant activation with 256-bit encrypted Stripe checkout, auto-pay, or one-time lifetime pass.</p>
+          </div>
+
+          <!-- Regional Currency Selector Toggle -->
+          <div class="stripe-region-toggle-wrap">
+            <span class="region-label">Currency / Region:</span>
+            <div class="region-pill-group" id="regionPillGroup">
+              <button type="button" class="region-pill-btn active" data-region="IN" id="regionBtnIN">
+                <span>🇮🇳 India (INR ₹)</span>
+                <span class="region-sub-badge">₹99/mo Auto-Pay</span>
+              </button>
+              <button type="button" class="region-pill-btn" data-region="GLOBAL" id="regionBtnGLOBAL">
+                <span>🌐 Global (USD $)</span>
+                <span class="region-sub-badge">$4.99/mo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stripe Pricing Tier Cards Grid -->
+        <div class="stripe-pricing-grid" id="stripePricingGrid">
+          <!-- Rendered dynamically by dashboard.js -->
+        </div>
+
+        <!-- Trust & Security Strip -->
+        <div class="stripe-trust-strip">
+          <div class="trust-item">
+            <span class="trust-icon">🔒</span>
+            <div>
+              <strong>Stripe 256-Bit SSL</strong>
+              <span>Bank-grade encryption</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">⚡</span>
+            <div>
+              <strong>Instant Auto-Activation</strong>
+              <span>Zero waiting time</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">🇮🇳</span>
+            <div>
+              <strong>RBI e-Mandate AutoPay</strong>
+              <span>Smooth recurring debits</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">🛡️</span>
+            <div>
+              <strong>14-Day Guarantee</strong>
+              <span>Hassle-free refunds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- License Key & Existing Customer Tools -->
+        <div class="stripe-bottom-tools-row">
+          <div class="license-activate-box">
+            <div class="license-box-title">
+              <span>🔑 Have a Pro License Key or Stripe ID?</span>
+            </div>
+            <div class="license-input-wrap">
+              <input type="text" id="licenseKeyInput" placeholder="CDNC-PRO-XXXX-XXXX-XXXX" class="text-input" autocomplete="off" />
+              <button type="button" class="btn btn-secondary" id="activateLicenseBtn">Activate Key</button>
+            </div>
+            <div class="license-feedback" id="licenseFeedback"></div>
+          </div>
+
+          <div class="stripe-portal-box">
+            <div class="license-box-title">
+              <span>💳 Manage Billing &amp; Invoices</span>
+            </div>
+            <p class="muted" style="font-size:12px; margin:0 0 10px 0;">Update card, download invoices, or cancel auto-pay via Stripe Customer Portal.</p>
+            <button type="button" class="btn btn-ghost" id="openCustomerPortalBtn">Open Stripe Customer Portal ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Theme & 4K Wallpaper Studio -->
+      <div class="pro-section-card">
+        <div class="pro-section-header">
+          <div>
+            <div class="pro-tag-badge">DESIGN STUDIO</div>
+            <h3>4K &amp; 8K Wallpaper &amp; Browser Customizer</h3>
+            <p class="muted">Select from high-definition 4K &amp; 8K Ultra HD environments, custom wallpapers, and visual tone palettes.</p>
+          </div>
+        </div>
+
+        <!-- 1. Color Palettes -->
+        <div class="pro-subheading">Color Theme Palettes</div>
+        <div class="pro-palette-grid" id="proPaletteGrid"></div>
+
+        <!-- 2. 4K Wallpaper Gallery -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 24px; margin-bottom: 12px;">
+          <div class="pro-subheading" style="margin: 0;">Ultra HD Environments</div>
+          <div class="pro-wp-category-filters" id="proWpCategoryFilters" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="wp-cat-pill active" data-cat="all">All</button>
+            <button type="button" class="wp-cat-pill" data-cat="My Uploads">📁 My Uploads</button>
+            <button type="button" class="wp-cat-pill" data-cat="8K Ultra HD">✨ 8K &amp; 12K</button>
+            <button type="button" class="wp-cat-pill" data-cat="Mountain & Wilderness">🏔️ Mountains</button>
+            <button type="button" class="wp-cat-pill" data-cat="Ocean & Seascape">🌊 Ocean</button>
+            <button type="button" class="wp-cat-pill" data-cat="Forest & Nature">🌲 Nature</button>
+            <button type="button" class="wp-cat-pill" data-cat="Sunset & Golden Hour">🌅 Golden Hour</button>
+            <button type="button" class="wp-cat-pill" data-cat="Architecture & Abstract">🏛️ Abstract</button>
+          </div>
+        </div>
+        <div class="pro-wallpaper-grid" id="proWallpaperGrid"></div>
+
+        <!-- Custom Wallpaper Uploader & URL -->
+        <div class="pro-custom-wallpaper-panel" id="customWallpaperPanel" style="margin-top: 16px;">
+          <div class="wp-dropzone" id="proDropzone" style="border: 2px dashed var(--violet-light, #6366f1); background: rgba(99, 102, 241, 0.05); border-radius: 14px; padding: 18px 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+            <input type="file" id="customWpFile" accept="image/*" style="display:none;" />
+            <div style="font-size: 28px; margin-bottom: 4px;">📁</div>
+            <div style="font-size: 14px; font-weight: 700; color: var(--ink);">Drag &amp; drop your wallpaper here</div>
+            <div style="font-size: 12px; color: var(--ink-soft); margin-top: 2px;">or <button type="button" id="uploadWpBtn" style="background:none; border:none; color:var(--violet, #6366f1); font-weight:700; text-decoration:underline; cursor:pointer;">choose image file</button> (PNG, JPG, WebP up to 4K / 8K)</div>
+            <div style="font-size: 11px; color: var(--ink-soft); opacity: 0.8; margin-top: 4px;">Auto-optimized for instant 4K high-definition loading</div>
+          </div>
+
+          <div class="custom-wp-row" style="margin-top: 12px; display:flex; gap:10px; align-items:center;">
+            <input type="url" id="customWpUrlInput" class="text-input" placeholder="Or paste direct image URL (https://...)" style="flex:1;" />
+            <button class="btn btn-secondary" id="applyCustomWpUrlBtn">Apply URL</button>
+          </div>
+
+          <!-- User Uploads Gallery -->
+          <div id="proUserUploadsWrap" style="margin-top: 16px; display: none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+              <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft);">My Uploaded Wallpapers</span>
+              <button type="button" id="proClearUploadsBtn" style="background:none; border:none; color:#ef4444; font-size:11px; font-weight:600; cursor:pointer;">Clear All</button>
+            </div>
+            <div id="proUserGallery" class="wp-user-gallery" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;"></div>
+          </div>
+        </div>
+
+        <!-- Wallpaper Display Fit Controls -->
+        <div style="margin-top: 20px;">
+          <div class="pro-subheading" style="margin-bottom: 8px;">Wallpaper Display Fit</div>
+          <div class="wp-fit-group" id="proFitGroup" style="display:flex; gap:8px;">
+            <button type="button" class="wp-fit-btn active" data-fit="cover">🖼️ Fill Screen</button>
+            <button type="button" class="wp-fit-btn" data-fit="contain">🔍 Fit Entire</button>
+            <button type="button" class="wp-fit-btn" data-fit="center">🎯 Center</button>
+          </div>
+        </div>
+
+        <div class="pro-rotation-bar" style="margin-top: 20px;">
+          <div>
+            <div class="rotation-title">✨ Fresh tab, fresh view</div>
+            <p>Rotate your selected wallpaper collection automatically when you open a new tab.</p>
+          </div>
+          <div class="rotation-actions">
+            <select id="wallpaperCadence" class="rotation-select" aria-label="Wallpaper rotation cadence">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+            <label class="switch-label"><input type="checkbox" id="wallpaperRotationToggle" /><span class="switch-ui"></span><span id="wallpaperRotationText">Off</span></label>
+          </div>
+        </div>
+
+        <!-- 3. Visual Filters & Atmosphere -->
+        <div class="grid-2" style="margin-top: 24px;">
+          <!-- Atmosphere Toggles -->
+          <div class="card pro-subcard pro-atmosphere-card">
+            <div class="card-head">
+              <h4>⚡ Advanced Atmosphere Engine</h4>
+            </div>
+            <div class="atmosphere-toggles-grid">
+              <label class="atmosphere-toggle-row">
+                <div>
+                  <div class="atmosphere-toggle-title">🌅 Dynamic Time-of-Day Shift</div>
+                  <div class="atmosphere-toggle-desc">Auto changes wallpaper from dawn to golden sunset to starry midnight</div>
+                </div>
+                <input type="checkbox" id="proDynamicShiftToggle" class="pro-checkbox-toggle" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Fine Tuning Sliders -->
+          <div class="card pro-subcard" style="grid-column: span 2;">
+            <div class="card-head">
+              <h4>Visual FX Adjustments</h4>
+              <button class="btn-text" id="resetFiltersBtn">Reset</button>
+            </div>
+
+            <!-- Quick Tone Presets -->
+            <div style="margin-bottom: 16px;">
+              <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); display: block; margin-bottom: 8px;">Quick Mood Presets</span>
+              <div class="wp-preset-chips" id="proPresetChips" style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="wp-preset-chip" data-preset="natural">🌟 Natural</button>
+                <button type="button" class="wp-preset-chip" data-preset="cinematic">🎬 Cinematic</button>
+                <button type="button" class="wp-preset-chip" data-preset="noir">☕ Moody B&amp;W</button>
+                <button type="button" class="wp-preset-chip" data-preset="warm">🌅 Warm Sunset</button>
+                <button type="button" class="wp-preset-chip" data-preset="nordic">❄️ Nordic Frost</button>
+                <button type="button" class="wp-preset-chip" data-preset="soft">🌫️ Soft Focus</button>
+              </div>
+            </div>
+
+            <div class="slider-control-group">
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Background Blur</span>
+                  <b id="blurValLabel">0px</b>
+                </div>
+                <input type="range" id="wpBlurSlider" min="0" max="25" step="1" value="0" class="pro-slider" />
+              </div>
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Darkness Dimming</span>
+                  <b id="dimValLabel">0%</b>
+                </div>
+                <input type="range" id="wpDimSlider" min="0" max="85" step="5" value="0" class="pro-slider" />
+              </div>
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Brightness</span>
+                  <b id="brightnessValLabel">100%</b>
+                </div>
+                <input type="range" id="wpBrightnessSlider" min="50" max="150" step="5" value="100" class="pro-slider" />
+              </div>
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Contrast</span>
+                  <b id="contrastValLabel">100%</b>
+                </div>
+                <input type="range" id="wpContrastSlider" min="70" max="150" step="5" value="100" class="pro-slider" />
+              </div>
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Color Saturation</span>
+                  <b id="satValLabel">100%</b>
+                </div>
+                <input type="range" id="wpSatSlider" min="0" max="180" step="5" value="100" class="pro-slider" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Companions & Voice Soundboard -->
+      <div class="pro-section-card">
+        <div class="pro-section-header">
+          <div>
+            <div class="pro-tag-badge">AI MENTORS</div>
+            <h3>Productivity Intelligence Mentors</h3>
+            <p class="muted">Equip an active AI companion with distinct perks, reactive cheers, and motivational wisdom.</p>
+          </div>
+        </div>
+        <div class="pro-companion-grid" id="proCompanionGrid"></div>
+
+        <div class="companion-interactive-box" id="companionInteractiveBox">
+          <div class="comp-box-left">
+            <span class="comp-box-icon" id="compActiveIcon">⚔️</span>
+            <div>
+              <h4 id="compActiveName" style="margin:0 0 2px 0;">Star Knight</h4>
+              <div id="compActivePerk" style="font-size:12px; color:var(--violet);">+10% Streak Recovery Speed</div>
+            </div>
+          </div>
+          <div class="comp-box-quote" id="compActiveQuote">"Every checkmark brings us closer to peak performance!"</div>
+          <button class="btn btn-primary" id="compSpeakBtn">💬 Speak &amp; Cheer</button>
+        </div>
+      </div>
+
+      <!-- Section: Ambient Focus Soundscapes & Pomodoro Lab -->
+      <div class="pro-section-card">
+        <div class="pro-section-header">
+          <div>
+            <div class="pro-tag-badge">FOCUS LAB</div>
+            <h3>Deep Work Soundscapes (Web Audio Synthesizer)</h3>
+            <p class="muted">100% offline harmonic sound synthesizer designed for deep concentration, relaxation, and mindfulness.</p>
+          </div>
+          <div class="sound-volume-wrap">
+            <span>🔊 Volume:</span>
+            <input type="range" id="soundVolumeSlider" min="0" max="1" step="0.05" value="0.5" class="pro-slider" style="width:100px;" />
+          </div>
+        </div>
+
+        <div class="focus-sprint-card" id="focusSprintCard">
+          <div class="focus-sprint-copy">
+            <span class="pro-tag-badge">PRO FOCUS SPRINT</span>
+            <h4>Give your next block a single purpose.</h4>
+            <input id="focusIntentionInput" class="focus-intention-input" maxlength="80" placeholder="What will you finish?" aria-label="Focus session intention" />
+            <div class="focus-presets" role="group" aria-label="Focus duration">
+              <button class="focus-preset active" data-minutes="25">25 min</button>
+              <button class="focus-preset" data-minutes="50">50 min</button>
+              <button class="focus-preset" data-minutes="90">90 min</button>
+            </div>
+          </div>
+          <div class="focus-sprint-clock">
+            <div class="focus-time" id="focusTime">25:00</div>
+            <div class="focus-state" id="focusState">Ready when you are</div>
+            <div class="focus-actions">
+              <button class="btn btn-primary" id="focusStartBtn">Start sprint</button>
+              <button class="btn btn-ghost" id="focusResetBtn">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="soundscape-grid" id="soundscapeGrid">
+          <div class="sound-card" data-sound="lofi_rain">
+            <div class="sound-ic">🌧️</div>
+            <div class="sound-info">
+              <div class="sound-title">Tokyo Rain Window</div>
+              <div class="sound-desc">Organic soft rain with low-pass dampening</div>
+            </div>
+            <button class="sound-toggle-btn" data-sound="lofi_rain">▶ Play</button>
+          </div>
+
+          <div class="sound-card" data-sound="zen_bowls">
+            <div class="sound-ic">🧘</div>
+            <div class="sound-info">
+              <div class="sound-title">Zen Temple Bowls</div>
+              <div class="sound-desc">Binaural resonant harmonic bowls (432Hz)</div>
+            </div>
+            <button class="sound-toggle-btn" data-sound="zen_bowls">▶ Play</button>
+          </div>
+
+          <div class="sound-card" data-sound="cosmic_drift">
+            <div class="sound-ic">🌌</div>
+            <div class="sound-info">
+              <div class="sound-title">Deep Cosmic Drift</div>
+              <div class="sound-desc">Celestial pink drone for intense focus</div>
+            </div>
+            <button class="sound-toggle-btn" data-sound="cosmic_drift">▶ Play</button>
+          </div>
+
+          <div class="sound-card" data-sound="cyber_cafe">
+            <div class="sound-ic">☕</div>
+            <div class="sound-info">
+              <div class="sound-title">Cyber Cafe Lo-Fi</div>
+              <div class="sound-desc">Warm vinyl crackle &amp; soothing analog pulse</div>
+            </div>
+            <button class="sound-toggle-btn" data-sound="cyber_cafe">▶ Play</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Pro Analytics & Power Tools -->
+      <div class="pro-section-card">
+        <div class="pro-section-header">
+          <div>
+            <div class="pro-tag-badge">POWER TOOLS</div>
+            <h3>Executive Data Vault &amp; Export Suite</h3>
+            <p class="muted">Access professional CSV data analytics, calendar synchronization, and high-res weekly reports.</p>
+          </div>
+        </div>
+        <div class="pro-tools-grid">
+          <div class="pro-tool-card">
+            <div class="tool-ic">📊</div>
+            <h4>CSV Data Export</h4>
+            <p>Export all historical habit logs, completion values, and streaks for spreadsheet analysis.</p>
+            <button class="btn btn-secondary" id="proExportCsvBtn">⬇ Download CSV</button>
+          </div>
+          <div class="pro-tool-card">
+            <div class="tool-ic">📅</div>
+            <h4>Calendar Sync (.ics)</h4>
+            <p>Sync all daily active habits to Google Calendar, Apple Calendar, or Outlook with 1 click.</p>
+            <button class="btn btn-secondary" id="proExportIcalBtn">📅 Download .ICS</button>
+          </div>
+          <div class="pro-tool-card">
+            <div class="tool-ic">📄</div>
+            <h4>Weekly PDF Report</h4>
+            <p>Generate clean, presentation-ready weekly summaries with breakdown charts &amp; streaks.</p>
+            <button class="btn btn-primary" id="proOpenReportBtn">📄 View Weekly Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ REPORTS ============ -->
+    <section class="view" id="view-reports">
+      <div class="report-toolbar no-print">
+        <div class="week-picker">
+          <button id="reportPrev" class="icon-btn">‹</button>
+          <span id="reportRange" class="week-range"></span>
+          <button id="reportNext" class="icon-btn">›</button>
+        </div>
+        <button class="btn btn-primary" id="downloadReportBtn">⬇ Download Weekly PDF Report</button>
+      </div>
+
+      <div class="report-paper" id="reportPrintArea">
+        <!-- filled dynamically -->
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="view" id="view-settings">
+      <div class="card">
+        <div class="card-head"><h3>Your Name</h3></div>
+        <input type="text" id="settingsName" class="text-input" placeholder="e.g. Alex" />
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Backup &amp; Restore</h3></div>
+        <p class="muted">Export all your habits and progress as a JSON file, or restore from a previous backup.</p>
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="exportBtn">⬇ Export JSON</button>
+          <button class="btn btn-secondary" id="exportCsvBtn">📊 Export CSV (Pro)</button>
+          <button class="btn btn-secondary" id="exportIcalBtn">📅 Sync Calendar (.ics)</button>
+          <label class="btn btn-secondary file-btn">⬆ Import data<input type="file" id="importInput" accept="application/json" hidden></label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Danger Zone</h3></div>
+        <p class="muted">This permanently deletes all habits and logged progress.</p>
+        <button class="btn btn-danger" id="resetBtn">Reset all data</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Add / Edit Habit Modal -->
+<div id="habitModal" class="modal-overlay no-print hidden">
+  <div class="modal">
+    <h3 id="modalTitle">Add Habit</h3>
+    <label class="field-label">Name</label>
+    <input type="text" id="mName" class="text-input" maxlength="60" placeholder="e.g. Drink water" />
+
+    <label class="field-label">Category</label>
+    <div id="mCategoryGrid" class="category-grid"></div>
+
+    <label class="field-label">Type</label>
+    <div class="type-toggle">
+      <button type="button" class="type-btn active" data-type="check">✓ Checkbox</button>
+      <button type="button" class="type-btn" data-type="numeric">🔢 Numeric target</button>
+    </div>
+
+    <div id="numericFields" class="numeric-fields hidden">
+      <div class="field-row">
+        <div>
+          <label class="field-label">Target</label>
+          <input type="number" id="mTarget" class="text-input" min="1" value="8" />
+        </div>
+        <div>
+          <label class="field-label">Unit</label>
+          <input type="text" id="mUnit" class="text-input" maxlength="16" placeholder="glasses" />
+        </div>
+      </div>
+    </div>
+
+    <label class="field-label">Repeat</label>
+    <div id="mDays" class="day-picker" role="group" aria-label="Days this habit is active"></div>
+    <div class="field-row habit-options-row">
+      <label class="check-option"><input type="checkbox" id="mMinimumEnabled" /> Allow a minimum version</label>
+      <input type="text" id="mMinimum" class="text-input" maxlength="40" placeholder="e.g. 5 minute walk" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="mCancel">Cancel</button>
+      <button class="btn btn-primary" id="mSave">Save Habit</button>
+    </div>
+  </div>
+</div>
+
+<div id="onboardingModal" class="modal-overlay no-print hidden" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+  <div class="modal onboarding-modal">
+    <span class="onboarding-kicker">WELCOME TO CADENCE</span>
+    <h3 id="onboardingTitle">Build a calmer daily rhythm.</h3>
+    <p class="muted">Pick up to three habits to start. You can refine schedules and targets anytime.</p>
+    <div id="onboardingHabitChoices" class="onboarding-choices"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="onboardingSkipBtn">Start empty</button>
+      <button class="btn btn-primary" id="onboardingContinueBtn">Create my routine</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- STRIPE SECURE CHECKOUT MODAL                                      -->
+<!-- ================================================================= -->
+<div id="stripeCheckoutModal" class="modal-overlay no-print hidden">
+  <div class="modal stripe-modal">
+    <div class="stripe-modal-header">
+      <div class="stripe-brand-badge">
+        <span>⚡ CADENCE PRO</span>
+        <span class="stripe-tag">SECURE CHECKOUT</span>
+      </div>
+      <button type="button" class="icon-btn" id="closeStripeModalBtn" title="Close">✕</button>
+    </div>
+
+    <div class="stripe-modal-body">
+      <!-- Plan Summary Card -->
+      <div class="stripe-order-summary-card">
+        <div class="summary-top-row">
+          <div>
+            <h4 id="stripeModalPlanName">Pro Monthly Auto-Pay</h4>
+            <p id="stripeModalPlanSubtitle" class="muted">Auto-debit recurring · Cancel anytime</p>
+          </div>
+          <div class="summary-price-box">
+            <span class="summary-currency" id="stripeModalCurrency">₹</span>
+            <span class="summary-amount" id="stripeModalPrice">99</span>
+            <span class="summary-period" id="stripeModalPeriod">/mo</span>
+          </div>
+        </div>
+
+        <!-- Order Items List -->
+        <div class="summary-items-list" id="stripeModalFeaturesList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Coupon Code Row -->
+        <div class="stripe-coupon-row">
+          <input type="text" id="stripeCouponInput" placeholder="Promo code (e.g. CADENCEVIP)" class="text-input" autocomplete="off" />
+          <button type="button" class="btn btn-secondary" id="applyCouponBtn">Apply</button>
+        </div>
+        <div class="coupon-feedback" id="couponFeedback"></div>
+
+        <!-- Total Breakdown -->
+        <div class="summary-breakdown-box">
+          <div class="breakdown-line">
+            <span>Subtotal</span>
+            <span id="breakdownSubtotal">₹99.00</span>
+          </div>
+          <div class="breakdown-line discount-line" id="breakdownDiscountRow" style="display:none;">
+            <span>Discount Promo</span>
+            <span id="breakdownDiscount">−₹0.00</span>
+          </div>
+          <div class="breakdown-divider"></div>
+          <div class="breakdown-line total-line">
+            <span>Total Due Today</span>
+            <span id="breakdownTotal">₹99.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stripe-payment-gateway-card">
+        <div class="gateway-header">
+          <h5>Secure payment</h5>
+        </div>
+        <a id="stripeHostedCheckoutLink" href="#" target="_blank" class="btn btn-stripe-direct">
+          <span class="stripe-logo-s">S</span>
+          <span>Continue to secure checkout ↗</span>
+        </a>
+        <p class="muted checkout-note">Payment details are collected only on the provider’s hosted checkout page. Pro activates after verified checkout is configured.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- STRIPE PAYMENT SUCCESS CELEBRATION MODAL                          -->
+<!-- ================================================================= -->
+<div id="stripeCelebrationModal" class="modal-overlay no-print hidden">
+  <div class="modal celebration-modal">
+    <div class="celebration-hero">
+      <div class="celebration-badge">⚡ VIP STATUS UNLOCKED</div>
+      <div class="celebration-emoji">👑✨</div>
+      <h3>Welcome to Cadence Pro!</h3>
+      <p class="muted">Your Stripe payment has been confirmed. All executive 4K environments, companions, and telemetry are now active.</p>
+    </div>
+
+    <div class="celebration-license-card">
+      <div class="license-lbl">Your Cadence Pro License Key:</div>
+      <div class="license-val-row">
+        <code id="celebrationLicenseKey">CDNC-PRO-IN99-8821-X9A2</code>
+        <button type="button" class="btn btn-ghost" id="copyCelebrationKeyBtn">📋 Copy</button>
+      </div>
+      <div class="license-sub">Saved automatically in your browser profile. Keep this key for other devices.</div>
+    </div>
+
+    <div class="celebration-actions">
+      <button type="button" class="btn btn-secondary" id="downloadReceiptBtn">🧾 Download Stripe Tax Invoice</button>
+      <button type="button" class="btn btn-primary" id="closeCelebrationBtn">🚀 Launch 4K Pro Cockpit</button>
+    </div>
+  </div>
+</div>
+
+<script src="lib/data.js"></script>
+<script src="lib/charts.js"></script>
+<script src="lib/pro-catalog.js"></script>
+<script src="lib/audio.js"></script>
+<script src="lib/theme.js"></script>
+<script src="lib/billing.js"></script>
+<script src="lib/suggestions.js"></script>
+<script src="lib/reminders.js"></script>
+<script src="common.js"></script>
+<script src="cadence-agent.js"></script>
+<script src="mascot.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
