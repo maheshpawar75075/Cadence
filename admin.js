@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  const API_BASE = "http://localhost:3000";
+  const API_BASE = "https://cadence-abl9.onrender.com";
   let adminKey = localStorage.getItem("cadence_admin_key") || "cadence_admin_secure_secret_2026";
   let allUsers = [];
 

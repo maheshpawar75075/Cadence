@@ -24,6 +24,8 @@
     "https://images.unsplash.com/*",
     "http://localhost:3000/*",
     "http://127.0.0.1:3000/*",
+    "https://cadence-abl9.onrender.com/*",
+    "https://*.onrender.com/*",
     "https://*.supabase.co/*",
     "https://api.razorpay.com/*",
     "https://api.stripe.com/*"
