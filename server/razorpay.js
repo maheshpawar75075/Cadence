@@ -99,7 +99,12 @@ class RazorpayService {
 
   // Cancel subscription
   async cancelSubscription(providerSubId, cancelAtCycleEnd = true) {
-    if (!this.isLive || providerSubId.startsWith("sub_mock_")) {
+    if (
+      !this.isLive ||
+      providerSubId.startsWith("sub_mock_") ||
+      providerSubId.startsWith("sub_sim_") ||
+      providerSubId.startsWith("sub_test_")
+    ) {
       return { status: "cancelled", cancel_at_cycle_end: cancelAtCycleEnd };
     }
     const res = await fetch(`https://api.razorpay.com/v1/subscriptions/${providerSubId}/cancel`, {
@@ -114,6 +119,10 @@ class RazorpayService {
     });
     if (!res.ok) {
       const err = await res.text();
+      if (res.status === 404 || err.includes("no Route matched")) {
+        console.warn(`[Razorpay] Subscription ${providerSubId} not found on Razorpay; proceeding with local cancellation.`);
+        return { status: "cancelled", cancel_at_cycle_end: cancelAtCycleEnd };
+      }
       throw new Error(`Failed to cancel Razorpay subscription: ${err}`);
     }
     return await res.json();

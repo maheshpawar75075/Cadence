@@ -117,7 +117,13 @@ class StripeService {
 
   // Cancel Stripe Subscription
   async cancelSubscription(subscriptionId, cancelAtPeriodEnd = true) {
-    if (!this.isLive || subscriptionId.startsWith("cs_mock_") || subscriptionId.startsWith("sub_mock_")) {
+    if (
+      !this.isLive ||
+      subscriptionId.startsWith("cs_mock_") ||
+      subscriptionId.startsWith("sub_mock_") ||
+      subscriptionId.startsWith("sub_sim_") ||
+      subscriptionId.startsWith("sub_test_")
+    ) {
       return { status: "canceled", cancel_at_period_end: cancelAtPeriodEnd };
     }
 

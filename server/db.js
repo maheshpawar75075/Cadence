@@ -33,6 +33,15 @@ const mockStore = {
   payment_events: new Map() // keyed by provider_event_id
 };
 
+function toUUID(str) {
+  if (!str) return crypto.randomUUID();
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str)) {
+    return str;
+  }
+  const hash = crypto.createHash("md5").update(String(str)).digest("hex");
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-4${hash.slice(13, 16)}-8${hash.slice(17, 20)}-${hash.slice(20, 32)}`;
+}
+
 class DatabaseService {
   constructor() {
     this.isSupabaseConfigured = Boolean(config.supabaseUrl && config.supabaseServiceRoleKey);
@@ -61,6 +70,9 @@ class DatabaseService {
       }
       return await res.json();
     } catch (err) {
+      if (err.message.includes("fetch failed") || (err.cause && (err.cause.code === "ENOTFOUND" || err.cause.code === "EPERM"))) {
+        return null;
+      }
       console.error(`[DB] Supabase fetch error (${endpoint}):`, err.message);
       throw err;
     }
@@ -68,32 +80,40 @@ class DatabaseService {
 
   // --- Profiles ---
   async getProfile(userId) {
+    const safeId = toUUID(userId);
     if (this.isSupabaseConfigured) {
-      const data = await this.#supabaseFetch(`profiles?id=eq.${userId}&select=*`);
+      const data = await this.#supabaseFetch(`profiles?id=eq.${safeId}&select=*`);
       return (data && data[0]) || null;
     }
-    return mockStore.profiles.get(userId) || null;
+    return mockStore.profiles.get(safeId) || null;
   }
 
   async upsertProfile(userId, profileData) {
+    const safeId = toUUID(userId);
     const payload = {
-      id: userId,
+      id: safeId,
       full_name: profileData.full_name || profileData.name || "",
       email: profileData.email || "",
       role: profileData.role || "user",
       updated_at: new Date().toISOString()
     };
     if (this.isSupabaseConfigured) {
-      const data = await this.#supabaseFetch("profiles", {
-        method: "POST",
-        prefer: "resolution=merge-duplicates,return=representation",
-        body: payload
-      });
-      return (data && data[0]) || payload;
+      try {
+        const data = await this.#supabaseFetch("profiles", {
+          method: "POST",
+          prefer: "resolution=merge-duplicates,return=representation",
+          body: payload
+        });
+        if (data && data[0]) return data[0];
+      } catch (err) {
+        if (!err.message || !err.message.includes("violates foreign key constraint")) {
+          throw err;
+        }
+      }
     }
-    const existing = mockStore.profiles.get(userId) || { created_at: new Date().toISOString() };
+    const existing = mockStore.profiles.get(safeId) || { created_at: new Date().toISOString() };
     const merged = { ...existing, ...payload };
-    mockStore.profiles.set(userId, merged);
+    mockStore.profiles.set(safeId, merged);
     return merged;
   }
 
@@ -116,15 +136,16 @@ class DatabaseService {
 
   // --- Subscriptions ---
   async getSubscriptionByUserId(userId) {
+    const safeId = toUUID(userId);
     if (this.isSupabaseConfigured) {
       // Order by created_at desc to get most recent
       const data = await this.#supabaseFetch(
-        `subscriptions?user_id=eq.${userId}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
+        `subscriptions?user_id=eq.${safeId}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
       );
-      return (data && data[0]) || null;
+      if (data && data[0]) return data[0];
     }
     // Search in mock store
-    const subs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === userId);
+    const subs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === safeId || s.user_id === userId);
     subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const sub = subs[0] || null;
     if (sub && !sub.subscription_plans) {
@@ -138,7 +159,7 @@ class DatabaseService {
       const data = await this.#supabaseFetch(
         `subscriptions?provider_subscription_id=eq.${providerSubId}&select=*,subscription_plans(*)`
       );
-      return (data && data[0]) || null;
+      if (data && data[0]) return data[0];
     }
     for (const sub of mockStore.subscriptions.values()) {
       if (sub.provider_subscription_id === providerSubId) return sub;
@@ -147,14 +168,15 @@ class DatabaseService {
   }
 
   async saveSubscription(subData) {
-    const id = subData.id || crypto.randomUUID();
+    const id = toUUID(subData.id || crypto.randomUUID());
+    const safeUserId = toUUID(subData.user_id);
     const now = new Date().toISOString();
-    const existing = subData.id ? mockStore.subscriptions.get(subData.id) : null;
+    const existing = subData.id ? mockStore.subscriptions.get(id) : null;
     const createdAt = (existing && existing.created_at) || subData.created_at || now;
 
     const record = {
       id,
-      user_id: subData.user_id,
+      user_id: safeUserId,
       plan_id: subData.plan_id,
       plan_code: subData.plan_code || "monthly",
       provider: subData.provider || "razorpay",
@@ -170,12 +192,35 @@ class DatabaseService {
     };
 
     if (this.isSupabaseConfigured) {
-      const data = await this.#supabaseFetch("subscriptions", {
-        method: "POST",
-        prefer: "resolution=merge-duplicates,return=representation",
-        body: record
-      });
-      return (data && data[0]) || record;
+      // Exclude virtual/local plan_code column from postgres payload
+      const supabasePayload = {
+        id: record.id,
+        user_id: record.user_id,
+        plan_id: record.plan_id,
+        provider: record.provider,
+        provider_customer_id: record.provider_customer_id,
+        provider_subscription_id: record.provider_subscription_id,
+        status: record.status,
+        current_period_start: record.current_period_start,
+        current_period_end: record.current_period_end,
+        cancel_at_period_end: record.cancel_at_period_end,
+        canceled_at: record.canceled_at,
+        created_at: record.created_at,
+        updated_at: record.updated_at
+      };
+
+      try {
+        const data = await this.#supabaseFetch("subscriptions", {
+          method: "POST",
+          prefer: "resolution=merge-duplicates,return=representation",
+          body: supabasePayload
+        });
+        if (data && data[0]) return { ...data[0], plan_code: record.plan_code };
+      } catch (err) {
+        if (!err.message || !err.message.includes("violates foreign key constraint")) {
+          throw err;
+        }
+      }
     }
 
     mockStore.subscriptions.set(id, record);

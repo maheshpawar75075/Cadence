@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment and sensitive keys
+.env
+.env.*
+!.env.example
+
+# Build outputs & packages
+dist/
+*.zip
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Spreadsheet / temporary scratch files
+*.xlsx
+scratch/
