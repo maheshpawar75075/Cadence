@@ -18,6 +18,12 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Local database store
+server/data/
+*.db
+*.sqlite
+
 # Spreadsheet / temporary scratch files
 *.xlsx
 scratch/
+

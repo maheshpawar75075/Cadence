@@ -2,7 +2,12 @@
 // Cadence SaaS Database Layer (Supabase PostgREST + Local Fallback Store)
 // ============================================================================
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const config = require("./config");
+
+// Store file for durable persistence across restarts
+const STORE_FILE = path.join(__dirname, "data", "cadence_store.json");
 
 // In-memory persistent cache for mock / test / local mode
 const mockStore = {
@@ -32,6 +37,44 @@ const mockStore = {
   subscriptions: new Map(), // keyed by id or user_id
   payment_events: new Map() // keyed by provider_event_id
 };
+
+function loadStoreFromFile() {
+  try {
+    if (fs.existsSync(STORE_FILE)) {
+      const data = JSON.parse(fs.readFileSync(STORE_FILE, "utf-8"));
+      if (data.profiles) {
+        for (const [k, v] of Object.entries(data.profiles)) mockStore.profiles.set(k, v);
+      }
+      if (data.subscriptions) {
+        for (const [k, v] of Object.entries(data.subscriptions)) mockStore.subscriptions.set(k, v);
+      }
+      if (data.payment_events) {
+        for (const [k, v] of Object.entries(data.payment_events)) mockStore.payment_events.set(k, v);
+      }
+    }
+  } catch (err) {
+    console.warn("[DB] Could not load persisted store:", err.message);
+  }
+}
+
+function persistStoreToFile() {
+  try {
+    const dataDir = path.dirname(STORE_FILE);
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    const payload = {
+      profiles: Object.fromEntries(mockStore.profiles),
+      subscriptions: Object.fromEntries(mockStore.subscriptions),
+      payment_events: Object.fromEntries(mockStore.payment_events),
+      savedAt: new Date().toISOString()
+    };
+    fs.writeFileSync(STORE_FILE, JSON.stringify(payload, null, 2), "utf-8");
+  } catch (err) {
+    // Non-fatal if filesystem is read-only
+  }
+}
+
+// Initial load on module require
+loadStoreFromFile();
 
 function toUUID(str) {
   if (!str) return crypto.randomUUID();
@@ -88,6 +131,20 @@ class DatabaseService {
     return mockStore.profiles.get(safeId) || null;
   }
 
+  async getUserByEmail(email) {
+    const clean = (email || "").trim().toLowerCase();
+    if (this.isSupabaseConfigured) {
+      const data = await this.#supabaseFetch(`profiles?email=eq.${encodeURIComponent(clean)}&select=*`);
+      if (data && data[0]) return data[0];
+    }
+    for (const profile of mockStore.profiles.values()) {
+      if (profile.email && profile.email.toLowerCase() === clean) {
+        return profile;
+      }
+    }
+    return null;
+  }
+
   async upsertProfile(userId, profileData) {
     const safeId = toUUID(userId);
     const payload = {
@@ -95,6 +152,7 @@ class DatabaseService {
       full_name: profileData.full_name || profileData.name || "",
       email: profileData.email || "",
       role: profileData.role || "user",
+      password_hash: profileData.password_hash || undefined,
       updated_at: new Date().toISOString()
     };
     if (this.isSupabaseConfigured) {
@@ -104,7 +162,12 @@ class DatabaseService {
           prefer: "resolution=merge-duplicates,return=representation",
           body: payload
         });
-        if (data && data[0]) return data[0];
+        if (data && data[0]) {
+          const merged = { ...data[0], ...payload };
+          mockStore.profiles.set(safeId, merged);
+          persistStoreToFile();
+          return merged;
+        }
       } catch (err) {
         if (!err.message || !err.message.includes("violates foreign key constraint")) {
           throw err;
@@ -114,6 +177,7 @@ class DatabaseService {
     const existing = mockStore.profiles.get(safeId) || { created_at: new Date().toISOString() };
     const merged = { ...existing, ...payload };
     mockStore.profiles.set(safeId, merged);
+    persistStoreToFile();
     return merged;
   }
 
@@ -224,16 +288,23 @@ class DatabaseService {
     }
 
     mockStore.subscriptions.set(id, record);
+    persistStoreToFile();
     return record;
   }
 
   // --- Payment Events (Audit Log & Idempotency) ---
   async hasProcessedEvent(provider, providerEventId) {
     if (this.isSupabaseConfigured) {
-      const data = await this.#supabaseFetch(
-        `payment_events?provider=eq.${provider}&provider_event_id=eq.${providerEventId}&select=id,processing_status`
-      );
-      return Boolean(data && data.length > 0 && data[0].processing_status === "processed");
+      try {
+        const data = await this.#supabaseFetch(
+          `payment_events?provider=eq.${provider}&provider_event_id=eq.${providerEventId}&select=id,processing_status`
+        );
+        if (data && data.length > 0) {
+          return data[0].processing_status === "processed";
+        }
+      } catch (_) {
+        // Fall back to in-memory store if network/Supabase fails
+      }
     }
     const existing = mockStore.payment_events.get(`${provider}:${providerEventId}`);
     return Boolean(existing && existing.processing_status === "processed");
@@ -254,6 +325,10 @@ class DatabaseService {
       created_at: now
     };
 
+    // Always maintain in-memory mirror for local fast queries, tests, and network fallbacks
+    mockStore.payment_events.set(`${provider}:${providerEventId}`, record);
+    persistStoreToFile();
+
     if (this.isSupabaseConfigured) {
       try {
         await this.#supabaseFetch("payment_events", {
@@ -264,10 +339,8 @@ class DatabaseService {
       } catch (e) {
         console.error("[DB] Failed to record payment event:", e.message);
       }
-      return record;
     }
 
-    mockStore.payment_events.set(`${provider}:${providerEventId}`, record);
     return record;
   }
 

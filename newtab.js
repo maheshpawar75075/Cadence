@@ -413,9 +413,32 @@
   if (accountMenuBtn && accountMenuDropdown) {
     accountMenuBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      syncAccountDropdown();
       toggleDropdown(accountMenuDropdown, accountMenuBtn);
     });
   }
+
+  // Sync Authenticated Account Details to Account Menu Dropdown
+  async function syncAccountDropdown() {
+    try {
+      if (window.FL && FL.saasClient && FL.saasClient.getUser) {
+        const user = await FL.saasClient.getUser();
+        if (user && user.email) {
+          const name = user.fullName || user.email.split("@")[0];
+          const initial = (name.charAt(0) || "U").toUpperCase();
+          const nameEl = document.getElementById("googleAccName");
+          const emailEl = document.getElementById("googleAccEmail");
+          const avatarEl = document.getElementById("googleAccAvatar");
+          const initialEl = document.getElementById("ntpAccountAvatarInitial");
+          if (nameEl) nameEl.textContent = name;
+          if (emailEl) emailEl.textContent = user.email;
+          if (avatarEl) avatarEl.textContent = initial;
+          if (initialEl) initialEl.textContent = initial;
+        }
+      }
+    } catch (_) {}
+  }
+  syncAccountDropdown();
 
   /* =====================================================================
    * SHORTCUT STORAGE & MANAGEMENT

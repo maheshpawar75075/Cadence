@@ -801,6 +801,13 @@ el("openDashboard").addEventListener("click", () => {
     });
   }
 
+  // Dynamic Streak Shield display
+  try {
+    const proSettings = typeof loadProSettings === "function" ? await loadProSettings() : null;
+    const shields = (proSettings && typeof proSettings.streakFreezes === "number") ? proSettings.streakFreezes : 2;
+    if (el("streakShieldCount")) el("streakShieldCount").textContent = shields;
+  } catch (_) {}
+
   if (el("pomoTimerBtn")) el("pomoTimerBtn").addEventListener("click", openPomoModal);
   if (el("ritualModeBtn")) el("ritualModeBtn").addEventListener("click", openRitualModal);
   const popCadence = el("popupCadenceBtn");

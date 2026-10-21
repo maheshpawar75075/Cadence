@@ -272,33 +272,22 @@
       </div>
 
       <!-- ================================================================= -->
-      <!-- SECTION: STRIPE PRICING PLANS & REGIONAL GATEWAY                  -->
+      <!-- SECTION: SAAS SUBSCRIPTION PLANS & BILLING                       -->
       <!-- ================================================================= -->
       <div class="pro-section-card stripe-pricing-section" id="stripePricingSection">
         <div class="pro-section-header stripe-header-row">
           <div>
-            <div class="pro-tag-badge">STRIPE PAYMENT GATEWAY</div>
-            <h3>Upgrade to Cadence Pro</h3>
-            <p class="muted">Instant activation with 256-bit encrypted Stripe checkout, auto-pay, or one-time lifetime pass.</p>
+            <div class="pro-tag-badge">SUBSCRIPTION MANAGEMENT</div>
+            <h3>Cadence Pro Subscription</h3>
+            <p class="muted">100% paid, executive performance workspace. Full access to all 4K environments, focus sprints, and AI companions.</p>
           </div>
-
-          <!-- Regional Currency Selector Toggle -->
-          <div class="stripe-region-toggle-wrap">
-            <span class="region-label">Currency / Region:</span>
-            <div class="region-pill-group" id="regionPillGroup">
-              <button type="button" class="region-pill-btn active" data-region="IN" id="regionBtnIN">
-                <span>🇮🇳 India (INR ₹)</span>
-                <span class="region-sub-badge">₹99/mo Auto-Pay</span>
-              </button>
-              <button type="button" class="region-pill-btn" data-region="GLOBAL" id="regionBtnGLOBAL">
-                <span>🌐 Global (USD $)</span>
-                <span class="region-sub-badge">$4.99/mo</span>
-              </button>
-            </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="openSaaSPricingBtn">⚡ View Plans &amp; Upgrade</button>
+            <button type="button" class="btn btn-secondary" id="proManageSubBtn">Manage Subscription</button>
           </div>
         </div>
 
-        <!-- Stripe Pricing Tier Cards Grid -->
+        <!-- SaaS Pricing Tier Cards Grid -->
         <div class="stripe-pricing-grid" id="stripePricingGrid">
           <!-- Rendered dynamically by dashboard.js -->
         </div>
@@ -308,52 +297,30 @@
           <div class="trust-item">
             <span class="trust-icon">🔒</span>
             <div>
-              <strong>Stripe 256-Bit SSL</strong>
+              <strong>Secure 256-Bit SSL</strong>
               <span>Bank-grade encryption</span>
             </div>
           </div>
           <div class="trust-item">
             <span class="trust-icon">⚡</span>
             <div>
-              <strong>Instant Auto-Activation</strong>
-              <span>Zero waiting time</span>
+              <strong>Instant Activation</strong>
+              <span>Unlocked across all tabs</span>
             </div>
           </div>
           <div class="trust-item">
             <span class="trust-icon">🇮🇳</span>
             <div>
-              <strong>RBI e-Mandate AutoPay</strong>
-              <span>Smooth recurring debits</span>
+              <strong>Razorpay &amp; Stripe</strong>
+              <span>Recurring billing &amp; UPI</span>
             </div>
           </div>
           <div class="trust-item">
             <span class="trust-icon">🛡️</span>
             <div>
-              <strong>14-Day Guarantee</strong>
-              <span>Hassle-free refunds</span>
+              <strong>Cancel Anytime</strong>
+              <span>Full prepaid period access</span>
             </div>
-          </div>
-        </div>
-
-        <!-- License Key & Existing Customer Tools -->
-        <div class="stripe-bottom-tools-row">
-          <div class="license-activate-box">
-            <div class="license-box-title">
-              <span>🔑 Have a Pro License Key or Stripe ID?</span>
-            </div>
-            <div class="license-input-wrap">
-              <input type="text" id="licenseKeyInput" placeholder="CDNC-PRO-XXXX-XXXX-XXXX" class="text-input" autocomplete="off" />
-              <button type="button" class="btn btn-secondary" id="activateLicenseBtn">Activate Key</button>
-            </div>
-            <div class="license-feedback" id="licenseFeedback"></div>
-          </div>
-
-          <div class="stripe-portal-box">
-            <div class="license-box-title">
-              <span>💳 Manage Billing &amp; Invoices</span>
-            </div>
-            <p class="muted" style="font-size:12px; margin:0 0 10px 0;">Update card, download invoices, or cancel auto-pay via Stripe Customer Portal.</p>
-            <button type="button" class="btn btn-ghost" id="openCustomerPortalBtn">Open Stripe Customer Portal ↗</button>
           </div>
         </div>
       </div>

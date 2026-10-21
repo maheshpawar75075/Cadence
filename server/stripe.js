@@ -17,17 +17,7 @@ class StripeService {
     const priceId = plan.stripePriceId;
 
     if (!this.isLive) {
-      const mockSessionId = "cs_mock_" + crypto.randomBytes(6).toString("hex");
-      return {
-        provider: "stripe",
-        sessionId: mockSessionId,
-        checkoutUrl: `${config.appBaseUrl}/checkout-simulation.html?subId=${mockSessionId}&userId=${encodeURIComponent(userId)}&plan=${planCode}&amount=${plan.priceInr}&provider=stripe`,
-        planCode: plan.code,
-        priceInr: plan.priceInr,
-        currency: "INR",
-        simulated: true,
-        message: "Stripe running in simulation mode. Configure STRIPE_SECRET_KEY to enable live checkout."
-      };
+      throw new Error("Stripe live checkout is not configured yet. Please select Razorpay or configure STRIPE_SECRET_KEY in the server environment.");
     }
 
     // Call Stripe API

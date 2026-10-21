@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server/index.js",
     "test": "node --test tests/*.test.js",
-    "package": "node scripts/package.js"
+    "package": "node scripts/package.js",
+    "video": "python3 scripts/generate_product_video.py"
   },
   "keywords": [
     "chrome-extension",

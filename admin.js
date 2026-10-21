@@ -5,7 +5,7 @@
   "use strict";
 
   const API_BASE = "https://cadence-abl9.onrender.com";
-  let adminKey = localStorage.getItem("cadence_admin_key") || "cadence_admin_secure_secret_2026";
+  let adminKey = localStorage.getItem("cadence_admin_key") || "";
   let allUsers = [];
 
   const inputKey = document.getElementById("inputAdminKey");

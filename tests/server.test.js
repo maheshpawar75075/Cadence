@@ -287,4 +287,83 @@ describe("Cadence SaaS Server & Monetization Engine", () => {
     assert.ok(typeof metrics.activeSubscriptions === "number");
     assert.ok(typeof metrics.totalRevenueInr === "number");
   });
+
+  test("11. User Sign Up: Creates profile and returns valid signed token", async () => {
+    const email = `newuser_${Date.now()}@example.com`;
+    const password = "securePassword123";
+
+    const res = await request("POST", "/api/auth/signup", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password, fullName: "New Cadence User" }
+    });
+
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert.strictEqual(data.success, true);
+    assert.ok(data.session && data.session.accessToken);
+    assert.strictEqual(data.session.user.email, email);
+
+    // Duplicate signup rejected
+    const dupRes = await request("POST", "/api/auth/signup", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password }
+    });
+    assert.strictEqual(dupRes.status, 400);
+  });
+
+  test("12. User Sign In: Verifies password and rejects invalid credentials", async () => {
+    const email = `signin_${Date.now()}@example.com`;
+    const password = "validPassword123";
+
+    await request("POST", "/api/auth/signup", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password, fullName: "Sign In User" }
+    });
+
+    // Wrong password
+    const failRes = await request("POST", "/api/auth/signin", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password: "wrongPassword" }
+    });
+    assert.strictEqual(failRes.status, 401);
+
+    // Correct password
+    const okRes = await request("POST", "/api/auth/signin", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password }
+    });
+    assert.strictEqual(okRes.status, 200);
+    const okData = await okRes.json();
+    assert.ok(okData.session && okData.session.accessToken);
+  });
+
+  test("13. Signed session token authenticates checkout creation", async () => {
+    const email = `authcheckout_${Date.now()}@example.com`;
+    const password = "validPassword123";
+
+    const signupRes = await request("POST", "/api/auth/signup", {
+      headers: { "Content-Type": "application/json" },
+      body: { email, password, fullName: "Checkout Buyer" }
+    });
+    const signupData = await signupRes.json();
+    const token = signupData.session.accessToken;
+
+    const checkoutRes = await request("POST", "/api/checkout/create", {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: { planCode: "monthly", provider: "razorpay" }
+    });
+
+    assert.strictEqual(checkoutRes.status, 200);
+    const checkoutData = await checkoutRes.json();
+    assert.strictEqual(checkoutData.success, true);
+    assert.ok(checkoutData.checkoutUrl);
+  });
+
+  test("14. Healthcheck HEAD request returns HTTP 200", async () => {
+    const res = await request("HEAD", "/health");
+    assert.strictEqual(res.status, 200);
+  });
 });

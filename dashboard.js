@@ -818,9 +818,22 @@ function renderStripePricingSection() {
   grid.querySelectorAll(".btn-stripe-plan").forEach((btn) => {
     btn.addEventListener("click", () => {
       const planKey = btn.dataset.planKey;
-      openStripeCheckoutModal(planKey, reg);
+      if (FL.saasUI) {
+        FL.saasUI.showPricingModal();
+      } else {
+        openStripeCheckoutModal(planKey, reg);
+      }
     });
   });
+
+  const openPricingBtn = el("openSaaSPricingBtn");
+  if (openPricingBtn) {
+    openPricingBtn.addEventListener("click", () => {
+      if (FL.saasUI) {
+        FL.saasUI.showPricingModal();
+      }
+    });
+  }
 }
 
 function openStripeCheckoutModal(planKey, region) {
@@ -1412,20 +1425,31 @@ Thank you for investing in your daily execution and high-performance habits!`;
     el("activateLicenseBtn").addEventListener("click", async () => {
       const input = el("licenseKeyInput");
       const feedback = el("licenseFeedback");
+      if (!input || !feedback) return;
       const key = (input.value || "").trim().toUpperCase();
 
-      if (FL.verifyLicenseKey(key)) {
+      if (!key) {
+        feedback.textContent = "⚠️ Please enter a valid license key or subscription ID.";
+        feedback.className = "license-feedback error";
+        return;
+      }
+
+      feedback.textContent = "Verifying license entitlement...";
+      feedback.className = "license-feedback";
+
+      const check = await FL.verifyLicenseKey(key);
+      if (check && check.ok) {
         const pro = await FL.activateProSubscription({ licenseKey: key });
         state.proSettings = pro;
-        feedback.textContent = "✓ License Key Activated! All Pro perks unlocked.";
+        feedback.textContent = "✓ Verified! All Cadence Pro perks unlocked.";
         feedback.className = "license-feedback success";
         input.value = "";
         renderProSuite();
         if (mascot && mascot.cheer) {
-          mascot.cheer({ epic: true, message: "⚡ Pro License Key Verified!" });
+          mascot.cheer({ epic: true, message: "⚡ Pro Subscription Verified!" });
         }
       } else {
-        feedback.textContent = "⚠️ Invalid License Key format. Example: CDNC-PRO-IN99-8821-X9A2";
+        feedback.textContent = "⚠️ Invalid or inactive license. Please subscribe to Cadence Pro.";
         feedback.className = "license-feedback error";
       }
     });

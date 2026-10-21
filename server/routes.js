@@ -16,6 +16,36 @@ function getHeader(req, name) {
   return "";
 }
 
+// Helper to create tamper-proof signed session tokens
+function signToken(payload) {
+  const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const sig = crypto.createHmac("sha256", config.adminSecretKey).update(data).digest("base64url");
+  return `${data}.${sig}`;
+}
+
+// Helper to verify signed session tokens
+function verifySignedToken(token) {
+  if (!token || typeof token !== "string" || !token.includes(".")) return null;
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const [dataStr, sig] = parts;
+  const expectedSig = crypto.createHmac("sha256", config.adminSecretKey).update(dataStr).digest("base64url");
+  try {
+    if (!crypto.timingSafeEqual(Buffer.from(sig, "utf-8"), Buffer.from(expectedSig, "utf-8"))) {
+      return null;
+    }
+  } catch (_) {
+    return null;
+  }
+  try {
+    const payload = JSON.parse(Buffer.from(dataStr, "base64url").toString("utf-8"));
+    if (payload.exp && Date.now() > payload.exp) return null;
+    return payload;
+  } catch (_) {
+    return null;
+  }
+}
+
 // Helper to authenticate incoming user token
 async function authenticateUser(req) {
   const authHeader = getHeader(req, "authorization");
@@ -25,7 +55,16 @@ async function authenticateUser(req) {
     return { authenticated: false, error: "Missing authorization token" };
   }
 
-  // If Supabase is configured, verify token with Supabase Auth API
+  // 1. Verify signed token issued by this server
+  const signedPayload = verifySignedToken(token);
+  if (signedPayload && signedPayload.user) {
+    return {
+      authenticated: true,
+      user: signedPayload.user
+    };
+  }
+
+  // 2. If Supabase is configured, verify token with Supabase Auth API
   if (config.supabaseUrl && config.supabaseAnonKey) {
     try {
       const res = await fetch(`${config.supabaseUrl.replace(/\/+$/, "")}/auth/v1/user`, {
@@ -50,7 +89,7 @@ async function authenticateUser(req) {
     }
   }
 
-  // Fallback for development / mock token (e.g., token format: mock_usr_<id> or dev token)
+  // 3. Fallback for test / simulation token
   if (token.startsWith("mock_") || token.startsWith("dev_") || token.length >= 10) {
     const cleanToken = token.replace(/^(mock_|dev_)/, "");
     let email = "user@cadence.app";
@@ -114,7 +153,17 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
   }
 
   // 1. Healthcheck
-  if (pathname === "/health" && method === "GET") {
+  if (pathname === "/health" && (method === "GET" || method === "HEAD")) {
+    if (method === "HEAD") {
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Razorpay-Signature, Stripe-Signature, X-Admin-Key",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, HEAD"
+      });
+      res.end();
+      return;
+    }
     return json(200, {
       status: "ok",
       app: "Cadence SaaS API",
@@ -124,6 +173,99 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
       razorpayLive: razorpay.isLive,
       stripeLive: stripe.isLive
     });
+  }
+
+  // 1b. User Authentication Routes
+  if (pathname === "/api/auth/signup" && method === "POST") {
+    const { email, password, fullName = "" } = parsedBody;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    if (!cleanEmail || !password || password.length < 6) {
+      return json(400, { error: "Please provide a valid email and password (minimum 6 characters)." });
+    }
+
+    const existing = await db.getUserByEmail(cleanEmail);
+    if (existing) {
+      return json(400, { error: "An account with this email already exists. Please sign in." });
+    }
+
+    const salt = crypto.randomBytes(16).toString("hex");
+    const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, "sha512").toString("hex");
+    const userId = crypto.randomUUID();
+
+    const profile = await db.upsertProfile(userId, {
+      email: cleanEmail,
+      full_name: fullName || cleanEmail.split("@")[0],
+      password_hash: `${salt}:${hash}`
+    });
+
+    const token = signToken({
+      user: {
+        id: profile.id,
+        email: profile.email,
+        fullName: profile.full_name
+      },
+      exp: Date.now() + 30 * 24 * 60 * 60 * 1000
+    });
+
+    return json(200, {
+      success: true,
+      session: {
+        accessToken: token,
+        user: {
+          id: profile.id,
+          email: profile.email,
+          fullName: profile.full_name
+        }
+      }
+    });
+  }
+
+  if (pathname === "/api/auth/signin" && method === "POST") {
+    const { email, password } = parsedBody;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    if (!cleanEmail || !password) {
+      return json(400, { error: "Please enter both email and password." });
+    }
+
+    const user = await db.getUserByEmail(cleanEmail);
+    if (!user || !user.password_hash) {
+      return json(401, { error: "Invalid email or password." });
+    }
+
+    const [salt, storedHash] = user.password_hash.split(":");
+    const testHash = crypto.pbkdf2Sync(password, salt, 10000, 64, "sha512").toString("hex");
+
+    if (testHash !== storedHash) {
+      return json(401, { error: "Invalid email or password." });
+    }
+
+    const token = signToken({
+      user: {
+        id: user.id,
+        email: user.email,
+        fullName: user.full_name
+      },
+      exp: Date.now() + 30 * 24 * 60 * 60 * 1000
+    });
+
+    return json(200, {
+      success: true,
+      session: {
+        accessToken: token,
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name
+        }
+      }
+    });
+  }
+
+  if (pathname === "/api/auth/me" && method === "GET") {
+    const auth = await authenticateUser(req);
+    if (!auth.authenticated) return json(401, { error: auth.error });
+    const sub = await db.getSubscriptionByUserId(auth.user.id);
+    return json(200, { user: auth.user, subscription: sub });
   }
 
   // 2. Pricing Plans (Public)
@@ -352,21 +494,35 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
 
       if (subId) {
         let sub = await db.getSubscriptionByProviderSubId(subId);
-        if (!sub && subEntity.notes && subEntity.notes.user_id) {
-          sub = await db.getSubscriptionByUserId(subEntity.notes.user_id);
+        const notes = (subEntity.notes && Object.keys(subEntity.notes).length) ? subEntity.notes : (paymentEntity.notes || {});
+        if (!sub && notes.user_id) {
+          sub = await db.getSubscriptionByUserId(notes.user_id);
         }
 
-        if (sub) {
-          const planCode = (subEntity.notes && subEntity.notes.plan_code) || "monthly";
-          const interval = planCode === "yearly" ? "year" : "month";
+        const planCode = notes.plan_code || (sub && sub.plan_code) || "monthly";
+        const interval = planCode === "yearly" ? "year" : "month";
 
-          if (eventType === "subscription.activated" || eventType === "subscription.charged" || eventType === "payment.captured") {
-            sub.status = "active";
-            sub.current_period_start = new Date().toISOString();
-            sub.current_period_end = calculatePeriodEnd(interval);
-            sub.cancel_at_period_end = false;
-            await db.saveSubscription(sub);
-          } else if (eventType === "subscription.cancelled") {
+        if (eventType === "subscription.activated" || eventType === "subscription.charged" || eventType === "payment.captured") {
+          const dbPlan = await db.getPlanByCode(planCode);
+          const planId = dbPlan ? dbPlan.id : (planCode === "yearly" ? "plan-yearly-uuid" : "plan-monthly-uuid");
+          const userId = (sub && sub.user_id) || notes.user_id;
+
+          if (userId) {
+            await db.saveSubscription({
+              id: sub ? sub.id : undefined,
+              user_id: userId,
+              plan_id: planId,
+              plan_code: planCode,
+              provider: "razorpay",
+              provider_subscription_id: subId,
+              status: "active",
+              current_period_start: new Date().toISOString(),
+              current_period_end: calculatePeriodEnd(interval),
+              cancel_at_period_end: false
+            });
+          }
+        } else if (sub) {
+          if (eventType === "subscription.cancelled") {
             sub.status = "canceled";
             sub.canceled_at = new Date().toISOString();
             await db.saveSubscription(sub);
@@ -454,8 +610,11 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
     }
   }
 
-  // 9. Simulation / Sandbox Activation Endpoint (Used for testing without live payment)
+  // 9. Simulation / Sandbox Activation Endpoint (Disabled in production)
   if (pathname === "/api/checkout/simulate-success" && method === "POST") {
+    if (config.nodeEnv === "production") {
+      return json(403, { error: "Simulation checkout endpoint is disabled in production." });
+    }
     const { userId, planCode = "monthly", subscriptionId } = parsedBody;
     if (!userId) return json(400, { error: "Missing userId" });
 

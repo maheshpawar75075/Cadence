@@ -75,15 +75,12 @@ English
 | `unlimitedStorage` | permissions | Allows caching high-resolution 4K wallpaper themes and ambient audio assets locally without exceeding default storage quotas. |
 | `alarms` | permissions | Schedules daily habit reminders and accurately clocks Pomodoro focus sprint countdown timers. |
 | `notifications` | permissions | Delivers desktop notifications when a focus sprint finishes or when daily habit targets are accomplished. |
-| `topSites` | permissions | Displays the user's most frequently visited websites as quick-launch tiles on the personalized new-tab screen. |
-| `bookmarks` | permissions | Allows users to quickly search and launch their browser bookmarks directly from the new-tab search input. |
 | `identity` | permissions | Authenticates the user's Cadence Pro account and Google OAuth sign-in to verify paid subscription status. |
 | `tabs` | permissions | Redirects distracting web pages to a zen calm screen when the user has active Focus Guard sprint mode enabled. |
 | `https://suggestqueries.google.com/*` | host_permissions | Fetches real-time search suggestions inside the new-tab search box as the user types. |
 | `https://images.unsplash.com/*` | host_permissions | Downloads curated 4K photography backgrounds for the customizable new tab interface. |
-| `https://*.supabase.co/*` | host_permissions | Connects to the secure backend to authenticate users and verify active Cadence Pro subscription status. |
-| `https://api.razorpay.com/*` | host_permissions | Connects with Razorpay payment services to initiate subscription checkout and billing management. |
-| `https://api.stripe.com/*` | host_permissions | Connects with Stripe payment services for international subscription payments. |
+| `https://cadence-abl9.onrender.com/*` | host_permissions | Connects to the secure SaaS backend to authenticate users and verify active Cadence Pro subscription status. |
+| `https://*.supabase.co/*` | host_permissions | Cloud database connection endpoint for authenticating accounts and syncing user habits across browser sessions. |
 
 ---
 

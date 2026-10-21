@@ -378,6 +378,30 @@ if (chrome.omnibox) {
       notifyTitle = `Cadence Briefing · ${pct}% Today`;
       notifyMessage = `${doneCount} of ${habits.length} habits completed today. Keep the streak alive! 🛡️`;
     }
+    // 4b. Ambient Soundscapes Control
+    else if (q.startsWith("sound") || q.startsWith("audio") || q.startsWith("play ")) {
+      if (q.includes("stop") || q.includes("mute") || q.includes("pause") || q.includes("off")) {
+        await chrome.storage.local.set({ fl_active_soundscape: { track: "none", playing: false, timestamp: Date.now() } });
+        notifyTitle = "Ambient Soundscape Stopped 🔇";
+        notifyMessage = "Audio playback has been stopped.";
+      } else {
+        let soundTrack = "rain";
+        let trackName = "Rain";
+        if (q.includes("zen") || q.includes("bowl")) { soundTrack = "zen"; trackName = "Zen Bowls (432Hz)"; }
+        else if (q.includes("cosmic") || q.includes("space")) { soundTrack = "cosmic"; trackName = "Cosmic Drift"; }
+        else if (q.includes("cyber") || q.includes("synth")) { soundTrack = "cyber"; trackName = "Cyberpunk Synth"; }
+        else if (q.includes("forest") || q.includes("pine")) { soundTrack = "forest"; trackName = "Pine Forest"; }
+        else if (q.includes("ocean") || q.includes("wave")) { soundTrack = "waves"; trackName = "Ocean Waves"; }
+        else if (q.includes("gamma") || q.includes("40hz")) { soundTrack = "gamma"; trackName = "40Hz Gamma Focus"; }
+        else if (q.includes("alpha") || q.includes("10hz")) { soundTrack = "alpha"; trackName = "10Hz Alpha Calm"; }
+
+        await chrome.storage.local.set({
+          fl_active_soundscape: { track: soundTrack, playing: true, timestamp: Date.now() }
+        });
+        notifyTitle = `🎵 Soundscape Playing: ${trackName}`;
+        notifyMessage = "Immersion locked. Ambient acoustic flow engaged.";
+      }
+    }
     // 5. Default Open
     else {
       chrome.tabs.create({ url: chrome.runtime.getURL("newtab.html") });

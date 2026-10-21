@@ -1212,41 +1212,17 @@
         };
       }
 
-      // 10. Activate License Key
+      // 10. Subscription & License
       if (q.startsWith("activate key") || q.startsWith("activate license") || q.includes("license key") || q.includes("cdnc-")) {
-        const keyMatch = q.match(/cdnc(?:-[a-z0-9]+){3,4}/i);
-        if (keyMatch) {
-          const key = keyMatch[0].toUpperCase();
-          if (FL && FL.verifyLicenseKey && (await FL.verifyLicenseKey(key))) {
-            if (FL.activateProSubscription) {
-              await FL.activateProSubscription({ licenseKey: key });
-            }
-            this.playChime("action");
-            return `🎉 **Success!** License Key \`${key}\` verified and activated. You now have full Cadence Pro access across all devices! 👑`;
-          } else {
-            return `⚠️ The license key \`${key}\` seems invalid. Please check your Stripe confirmation receipt or email.`;
-          }
-        } else {
-          return `To activate your key, say *"activate key CDNC-PRO-XXXX-XXXX-XXXX"* or paste it in the Pro Suite tab on your Dashboard.`;
-        }
+        return `Cadence Pro subscriptions are managed automatically via your account. Click the **⚡ PRO** button in your top bar or open the Subscription Manager from your dashboard to view your active status.`;
       }
 
-      // 11. Stripe Pro Pricing & Plans
-      if (/\b(pro|pricing|cost|price|plans?|upgrade|subscription)\b/i.test(q) || q.includes("how much") || q.includes("stripe")) {
-        const isIndia = FL && FL.detectUserRegion ? FL.detectUserRegion() === "IN" : true;
-        if (isIndia) {
-          return `⚡ **Cadence Pro Pricing (India):**\n\n` +
-                 `• **Monthly Auto-Pay:** **₹99 / month** (Auto-debit recurring · Cancel anytime)\n` +
-                 `• **Annual Auto-Pay:** **₹799 / year** (~₹66/month · **Save 33%**)\n` +
-                 `• **Lifetime VIP Ultra:** **₹1,499 one-time** (Pay once, own forever)\n\n` +
-                 `Includes all 4K environments, all 5 AI companions, 432Hz soundscapes, unlimited AI voice queries, and streak freeze shields! Go to Dashboard > Pro Suite to upgrade via Stripe. 🛡️`;
-        } else {
-          return `⚡ **Cadence Pro Pricing (Global):**\n\n` +
-                 `• **Monthly Subscription:** **$4.99 / month** (Cancel anytime)\n` +
-                 `• **Annual Pro:** **$39.00 / year** ($3.25/month · **Save 35%**)\n` +
-                 `• **Lifetime VIP Ultra:** **$59.00 one-time** (Pay once, own forever)\n\n` +
-                 `Includes all 4K environments, all 5 AI companions, 432Hz soundscapes, unlimited AI voice queries, and streak freeze shields! Go to Dashboard > Pro Suite to upgrade via Stripe. 🛡️`;
-        }
+      // 11. SaaS Pricing & Plans
+      if (/\b(pro|pricing|cost|price|plans?|upgrade|subscription)\b/i.test(q) || q.includes("how much") || q.includes("razorpay") || q.includes("stripe")) {
+        return `⚡ **Cadence Pro Pricing & Plans:**\n\n` +
+               `• **Monthly Plan:** **₹69 / month** (Recurring monthly billing · Full access · Cancel anytime)\n` +
+               `• **Yearly Plan:** **₹799 / year** (~₹66/month · **Save ₹29/year vs monthly** · Uninterrupted access)\n\n` +
+               `Includes all 34 4K environments, all AI companions, 432Hz spatial soundscapes, unlimited AI coach queries, and streak freeze shields! Click the ⚡ PRO button in your top bar or open Dashboard to manage your subscription. 🛡️`;
       }
 
       // 11. Ready-Made Day-to-Day Tasks & Routine Packs

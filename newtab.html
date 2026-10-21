@@ -8,72 +8,7 @@
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="newtab.css" />
   <link rel="stylesheet" href="cadence-agent.css" />
-  <script>
-    /* Instant Frame-0 Wallpaper & Theme Bootstrapper */
-    (function() {
-      try {
-        var raw = localStorage.getItem("fl_pro_settings");
-        var p = raw ? JSON.parse(raw) : null;
-        var ts = p && p.themeSettings ? p.themeSettings : null;
-        var wpId = (ts && ts.wallpaperId) ? ts.wallpaperId : "dolomites_sunbeams_8k";
-        var customUrl = ts && ts.customWallpaperUrl ? ts.customWallpaperUrl : "";
-        var wpMap = {
-          "dolomites_sunbeams_8k": "Wallpaper/pexels-eberhardgross-12365962.jpg",
-          "alpine_lake_panorama_12k": "Wallpaper/jerry-kavan-F2UvQ-iIqqA-unsplash.jpg",
-          "golden_meadow_brook_12k": "Wallpaper/pexels-mattia-d-andrea-1351715572-25696415.jpg",
-          "vestrahorn_twilight_6k": "Wallpaper/pexels-eberhardgross-20459771.jpg",
-          "balos_lagoon_boat_8k": "Wallpaper/joshua-kettle-sKOBxEb6E-E-unsplash.jpg",
-          "geiranger_fjord_6k": "Wallpaper/pexels-enrique72-6415692.jpg",
-          "winnats_pass_sunrise_6k": "Wallpaper/grant-ritchie-x1w_Q78xNEY-unsplash.jpg",
-          "yosemite_half_dome_6k": "Wallpaper/pexels-laczadesign-17140515.jpg",
-          "yosemite_valley_vista_8k": "Wallpaper/pexels-stephen-leonardi-587681991-28610386.jpg",
-          "yosemite_autumn_lake_4k": "Wallpaper/jeremy-bishop-d3fZSXlJ3Ok-unsplash.jpg",
-          "na_pali_coast_6k": "Wallpaper/braden-jarvis-prSogOoFmkw-unsplash.jpg",
-          "hawaiian_sunset_peaks_8k": "Wallpaper/pexels-jess-vide-5007767.jpg",
-          "palm_infinity_reflection_8k": "Wallpaper/dan-freeman-wAn4RfmXtxU-unsplash.jpg",
-          "white_sand_shoreline_4k": "Wallpaper/nattu-adnan-Ai2TRdvI6gM-unsplash.jpg",
-          "keyhole_arch_sunset_8k": "Wallpaper/joshua-sortino-xZqr8WtYEJ0-unsplash.jpg",
-          "cinque_terre_twilight": "Wallpaper/anders-jilden-cYrMQA7a3Wc-unsplash.jpg",
-          "alpine_pass_trails": "Wallpaper/alexander-slattery-LI748t0BK8w-unsplash.jpg",
-          "alaskan_ice_fjord_6k": "Wallpaper/john-cobb-IE_sifhay7o-unsplash.jpg",
-          "alpine_sunburst_range_8k": "Wallpaper/pexels-jplenio-5735485.jpg",
-          "zion_canyon_falls_6k": "Wallpaper/wil-stewart-pHANr-CpbYM-unsplash.jpg",
-          "tatras_purple_dusk": "Wallpaper/stefan-stefancik--g7axSVst6Y-unsplash.jpg",
-          "pinnacle_wanderer": "Wallpaper/urban-vintage-78A265wPiO4-unsplash.jpg",
-          "autumn_mountain_valley_6k": "Wallpaper/pexels-ioannis-ioannidis-1565556-20054034.jpg",
-          "cypress_mountain_ridge_6k": "Wallpaper/pexels-urtimud-89-76108288-9161906.jpg",
-          "cloud_sea_summit_6k": "Wallpaper/pexels-trungnguyenphotog-5155161.jpg",
-          "sunset_prairie_silhouettes_8k": "Wallpaper/pexels-imadclicks-16088698.jpg",
-          "lavender_lake_twilight_6k": "Wallpaper/pexels-rinoadamo-35281884.jpg",
-          "emerald_lake_canopy": "Wallpaper/andreas-gucklhorn-mawU2PoJWfU-unsplash.jpg",
-          "midnight_foliage_6k": "Wallpaper/djordje-gajic-XpmBYWxDMdg-unsplash.jpg",
-          "taiga_expedition_8k": "Wallpaper/mikhail-pushkarev-XrSWzMOfe-k-unsplash.jpg",
-          "river_bend_wetlands_8k": "Wallpaper/pexels-john-callery-3749962-5620997.jpg",
-          "solitary_meadow_oak_8k": "Wallpaper/pexels-damir-31447507.jpg",
-          "poly_matrix_emerald_8k": "Wallpaper/logan-voss-mAlnGB7D6wU-unsplash.jpg",
-          "wooden_labyrinth_8k": "Wallpaper/nigel-hoare-lKW9bwqGwTw-unsplash.jpg"
-        };
-        if (wpId !== "custom" && wpId !== "none" && !wpMap[wpId]) {
-          wpId = "dolomites_sunbeams_8k";
-        }
-        var url = (wpId === "custom" && customUrl) ? customUrl : (wpMap[wpId] || "Wallpaper/pexels-eberhardgross-12365962.jpg");
-        var mode = ts && ts.themeMode ? ts.themeMode : "system";
-        var isDark = mode === "dark" || (mode === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        if (isDark) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
-        if (wpId === "none") {
-          document.documentElement.style.setProperty("--boot-wallpaper", "none");
-          document.documentElement.classList.add("no-boot-wallpaper");
-        } else {
-          document.documentElement.style.setProperty("--boot-wallpaper", "url('" + url + "')");
-          document.documentElement.classList.remove("no-boot-wallpaper");
-          var fit = ts && ts.wallpaperFit ? ts.wallpaperFit : "cover";
-          document.documentElement.style.setProperty("--boot-wallpaper-fit", fit === "center" ? "auto" : fit);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <script src="bootstrapper.js"></script>
   <style id="cadenceBootWallpaperStyle">
     #cadenceWallpaperLayer {
       background-image: var(--boot-wallpaper, url('Wallpaper/pexels-eberhardgross-12365962.jpg'));
@@ -96,7 +31,32 @@
 
   <!-- ── Top Navigation Bar (Default Chrome Style) ── -->
   <header class="ntp-topbar">
-    <div class="ntp-top-left"></div>
+    <div class="ntp-top-left">
+      <!-- ── Ambient Soundscape Menu & Player ── -->
+      <div class="ntp-soundscape-wrap" id="ntpSoundscapeWrap">
+        <button type="button" class="ntp-soundscape-toggle" id="ntpSoundscapeToggleBtn" title="Ambient Soundscapes">
+          <span class="ntp-sound-bars"><i></i><i></i><i></i></span>
+          <span id="ntpSoundLabel" class="ntp-sound-label">Focus Audio</span>
+        </button>
+        <div class="ntp-soundscape-menu" id="ntpSoundscapeMenu" aria-hidden="true">
+          <div class="sound-menu-header">
+            <span>Ambient Soundscapes</span>
+          </div>
+          <div class="sound-track-list">
+            <button type="button" class="sound-track-btn" data-track="rain">🌧️ Lofi Rain</button>
+            <button type="button" class="sound-track-btn" data-track="zen">🥣 Zen Bowls (432Hz)</button>
+            <button type="button" class="sound-track-btn" data-track="cyberpunk">⚡ Cyberpunk Synth</button>
+            <button type="button" class="sound-track-btn" data-track="space">🌌 Cosmic Drift</button>
+            <button type="button" class="sound-track-btn" data-track="forest">🌲 Pine Forest</button>
+            <button type="button" class="sound-track-btn" data-track="brown">🌊 Ocean Waves</button>
+          </div>
+          <div class="sound-vol-slider-row">
+            <span class="vol-icon">🔉</span>
+            <input type="range" class="sound-vol-slider" id="ntpSoundVolume" min="0" max="1" step="0.05" value="0.5" title="Volume" />
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="ntp-top-right">
       <button class="ntp-pro-sub-btn" id="ntpManageSubBtn" title="Cadence Pro Active — Click to manage subscription" style="background: rgba(108, 92, 231, 0.2); border: 1px solid rgba(108, 92, 231, 0.4); color: #a29bfe; padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;">
         <span>⚡ PRO</span>
@@ -113,7 +73,7 @@
 
       <!-- ── Google Account Avatar Button ── -->
       <button class="ntp-avatar-btn" id="accountMenuBtn" title="Google Account" aria-expanded="false" aria-haspopup="true">
-        <div class="ntp-avatar">M</div>
+        <div class="ntp-avatar" id="ntpAccountAvatarInitial">C</div>
       </button>
     </div>
   </header>
@@ -135,7 +95,7 @@
   <div class="ntp-dropdown ntp-account-dropdown" id="accountMenuDropdown" aria-hidden="true">
     <div class="google-acc-card">
       <div class="google-acc-avatar-wrap">
-        <div class="google-acc-avatar" id="googleAccAvatar">M</div>
+        <div class="google-acc-avatar" id="googleAccAvatar">C</div>
         <div class="google-acc-avatar-badge" title="Google Account">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -143,8 +103,8 @@
         </div>
       </div>
       <div class="google-acc-details">
-        <div class="google-acc-name" id="googleAccName">Mahesh Pawar</div>
-        <div class="google-acc-email" id="googleAccEmail">maheshpawar@gmail.com</div>
+        <div class="google-acc-name" id="googleAccName">Cadence Subscriber</div>
+        <div class="google-acc-email" id="googleAccEmail">subscriber@cadence.app</div>
       </div>
       <a href="https://myaccount.google.com" target="_blank" class="google-acc-manage-btn">
         Manage your Google Account
@@ -180,6 +140,9 @@
 
   <!-- ── Main Google Hero Workspace ── -->
   <main class="ntp-main">
+    <!-- Live NTP Clock Container -->
+    <div id="ntpClock" class="ntp-clock"></div>
+
     <!-- Authentic Google Logo -->
     <div class="ntp-logo-wrap" id="ntpLogoWrap">
       <h1 class="ntp-logo" aria-label="Google">

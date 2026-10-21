@@ -36,6 +36,8 @@ const filesToInclude = [
   "dashboard.js",
   "blocked.html",
   "blocked.css",
+  "blocked.js",
+  "bootstrapper.js",
   "background.js",
   "common.js",
   "cadence-agent.js",
