@@ -17,7 +17,7 @@ const mockStore = {
       id: "plan-monthly-uuid",
       plan_code: "monthly",
       plan_name: config.plans.monthly.name,
-      price_inr: 69,
+      price_inr: 88,
       billing_interval: "month",
       provider_plan_id: config.plans.monthly.razorpayPlanId,
       is_active: true,

@@ -36,6 +36,13 @@ const server = http.createServer((req, res) => {
 
     const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
     
+    // Serve Public Product & Compliance Landing Page (for Razorpay compliance review)
+    const publicPages = ["/", "/index.html", "/terms", "/privacy", "/refund", "/cancellation", "/contact"];
+    if (publicPages.includes(url.pathname)) {
+      const landingPath = path.join(__dirname, "landing.html");
+      if (serveStatic(res, landingPath, "text/html")) return;
+    }
+
     // Serve Checkout Simulation Page (for local / sandbox testing)
     if (url.pathname === "/checkout-simulation.html") {
       const simPath = path.join(__dirname, "checkout-simulation.html");

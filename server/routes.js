@@ -662,7 +662,7 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
       let totalRevenueInr = 0;
       activeSubs.forEach(s => {
         const planCode = (s.subscription_plans && s.subscription_plans.plan_code) || s.plan_code;
-        totalRevenueInr += (planCode === "yearly" ? 799 : 69);
+        totalRevenueInr += (planCode === "yearly" ? 799 : 88);
       });
 
       return json(200, {

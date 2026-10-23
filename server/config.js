@@ -41,17 +41,17 @@ const config = {
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY || "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
 
-  // Pricing (₹69 INR monthly, ₹799 INR yearly)
+  // Pricing (₹88 INR monthly, ₹799 INR yearly)
   plans: {
     monthly: {
       code: "monthly",
       name: "Cadence Pro Monthly",
-      priceInr: 69,
+      priceInr: 88,
       billingInterval: "month",
       currency: "INR",
       symbol: "₹",
-      razorpayPlanId: process.env.RAZORPAY_PLAN_MONTHLY_ID || "plan_monthly_69inr",
-      stripePriceId: process.env.STRIPE_PRICE_MONTHLY_ID || "price_monthly_69inr",
+      razorpayPlanId: process.env.RAZORPAY_PLAN_MONTHLY_ID || "plan_monthly_88inr",
+      stripePriceId: process.env.STRIPE_PRICE_MONTHLY_ID || "price_monthly_88inr",
       features: [
         "Full access to every habit & performance feature",
         "4K Dynamic New-Tab Wallpapers & Custom Uploads",
@@ -71,7 +71,7 @@ const config = {
       currency: "INR",
       symbol: "₹",
       badge: "Yearly Plan",
-      savingsText: "Save ₹29 per year compared to monthly billing",
+      savingsText: "Save ₹257 per year compared to monthly billing",
       razorpayPlanId: process.env.RAZORPAY_PLAN_YEARLY_ID || "plan_yearly_799inr",
       stripePriceId: process.env.STRIPE_PRICE_YEARLY_ID || "price_yearly_799inr",
       features: [

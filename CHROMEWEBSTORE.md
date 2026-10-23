@@ -27,14 +27,14 @@ KEY FEATURES:
 
 HOW IT WORKS:
 1. Install Cadence and click the extension icon or open a new tab.
-2. Sign in to your Cadence Pro account and select your subscription (Monthly ₹69 or Yearly ₹799).
+2. Sign in to your Cadence Pro account and select your subscription (Monthly ₹88 or Yearly ₹799).
 3. Set your top 3 daily habits and customize your workspace with your favorite soundscape and wallpaper.
 4. Open a new tab anytime to log your habits, initiate a focus sprint, and watch your consistency grow.
 
 SUBSCRIPTION & PRICING:
 Cadence Pro is a premium, distraction-free productivity workspace with no advertisements and no data selling. Access requires an active Cadence Pro subscription:
-• Monthly Plan: ₹69 / month (cancel anytime)
-• Yearly Plan: ₹799 / year (save ₹29/year vs monthly)
+• Monthly Plan: ₹88 / month (cancel anytime)
+• Yearly Plan: ₹799 / year (save ₹257/year vs monthly)
 
 PRIVACY & SECURITY:
 Your privacy is our priority. Your habit records, notes, and local sprint statistics remain privately stored in your browser. We never track your personal browsing history, sell data to advertisers, or display third-party advertisements.

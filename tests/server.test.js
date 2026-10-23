@@ -68,7 +68,7 @@ describe("Cadence SaaS Server & Monetization Engine", () => {
     assert.strictEqual(data.app, "Cadence SaaS API");
   });
 
-  test("2. Business Model & Pricing: ₹69/mo & ₹799/yr, NO free tier, accurate savings", async () => {
+  test("2. Business Model & Pricing: ₹88/mo & ₹799/yr, NO free tier, accurate savings", async () => {
     const res = await request("GET", "/api/plans");
     assert.strictEqual(res.status, 200);
     const data = await res.json();
@@ -79,8 +79,8 @@ describe("Cadence SaaS Server & Monetization Engine", () => {
     const yearly = data.plans.find(p => p.code === "yearly");
 
     assert.ok(monthly, "Monthly plan must exist");
-    assert.strictEqual(monthly.priceInr, 69, "Monthly plan must be exactly ₹69 INR");
-    assert.strictEqual(monthly.displayPrice, "₹69");
+    assert.strictEqual(monthly.priceInr, 88, "Monthly plan must be exactly ₹88 INR");
+    assert.strictEqual(monthly.displayPrice, "₹88");
     assert.strictEqual(monthly.billingInterval, "month");
 
     assert.ok(yearly, "Yearly plan must exist");
@@ -88,10 +88,10 @@ describe("Cadence SaaS Server & Monetization Engine", () => {
     assert.strictEqual(yearly.displayPrice, "₹799");
     assert.strictEqual(yearly.billingInterval, "year");
 
-    // Yearly savings check: 12 * 69 = 828. 828 - 799 = 29 INR savings
+    // Yearly savings check: 12 * 88 = 1056. 1056 - 799 = 257 INR savings
     const expectedSavings = (monthly.priceInr * 12) - yearly.priceInr;
-    assert.strictEqual(expectedSavings, 29, "Yearly savings calculation must be accurate (₹29/year)");
-    assert.strictEqual(yearly.savingsInr, 29);
+    assert.strictEqual(expectedSavings, 257, "Yearly savings calculation must be accurate (₹257/year)");
+    assert.strictEqual(yearly.savingsInr, 257);
   });
 
   test("3. Checkout: Rejects unauthenticated requests", async () => {
