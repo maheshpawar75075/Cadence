@@ -1,6 +1,6 @@
 {
   "name": "cadence-pro",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Cadence — Habit & Performance Tracker (100% Paid SaaS Extension)",
   "main": "background.js",
   "scripts": {

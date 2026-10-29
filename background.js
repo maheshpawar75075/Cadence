@@ -419,27 +419,4 @@ if (chrome.omnibox) {
   });
 }
 
-/* --------------------------------------------------------------------------
-   4. GOOGLE SUGGESTIONS PROXY
-   -------------------------------------------------------------------------- */
-chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
-  if (req && req.action === "get_google_suggestions" && req.query) {
-    const url = `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(req.query)}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => {
-        sendResponse({ success: true, suggestions: data[1] || [] });
-      })
-      .catch((err) => {
-        fetch(`https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(req.query)}`)
-          .then((res) => res.json())
-          .then((data2) => {
-            sendResponse({ success: true, suggestions: data2[1] || [] });
-          })
-          .catch((err2) => {
-            sendResponse({ success: false, error: err2.message });
-          });
-      });
-    return true; // Keep message channel open for async response
-  }
-});
+}

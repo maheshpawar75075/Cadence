@@ -44,6 +44,7 @@ class RazorpayService {
     try {
       // Call live Razorpay API
       const totalCount = planCode === "yearly" ? 5 : 60; // 5 years or 5 years monthly
+      const safeNote = (val, max = 250) => String(val || "").slice(0, max);
       const res = await fetch("https://api.razorpay.com/v1/subscriptions", {
         method: "POST",
         headers: {
@@ -56,9 +57,9 @@ class RazorpayService {
           quantity: 1,
           customer_notify: 1,
           notes: {
-            user_id: userId,
-            plan_code: planCode,
-            email: userEmail
+            user_id: safeNote(userId, 250),
+            plan_code: safeNote(planCode, 50),
+            email: safeNote(userEmail, 250)
           }
         })
       });

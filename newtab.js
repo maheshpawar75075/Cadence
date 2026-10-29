@@ -201,52 +201,16 @@
     if (isUrl) {
       const dest = query.startsWith("http://") || query.startsWith("https://") ? query : `https://${query}`;
       window.location.href = dest;
+    } else if (typeof chrome !== "undefined" && chrome.search && typeof chrome.search.query === "function") {
+      // Respect user's selected search engine via official Chrome Search API
+      chrome.search.query({ text: query, disposition: "CURRENT_TAB" });
     } else {
       window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
     }
   }
 
   async function fetchSuggestions(query) {
-    if (!query || query.trim().length === 0) { hideSuggestions(); return; }
-    const trimmed = query.trim();
-    // Skip suggestion fetch for URL-like input
-    if (/^(https?:\/\/|[a-zA-Z0-9-]+\.[a-zA-Z]{2,})(\S*)$/.test(trimmed)) { hideSuggestions(); return; }
-
-    // 1. Primary: Use background service worker proxy (bypasses CSP/CORS, returns authentic Chrome suggestions)
-    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
-      try {
-        chrome.runtime.sendMessage({ action: "get_google_suggestions", query: trimmed }, (response) => {
-          if (chrome.runtime.lastError || !response || !response.success || !Array.isArray(response.suggestions)) {
-            fallbackFetchSuggestions(trimmed);
-            return;
-          }
-          const list = response.suggestions.slice(0, 8);
-          if (list.length > 0) {
-            showSuggestions(list, trimmed);
-          } else {
-            fallbackFetchSuggestions(trimmed);
-          }
-        });
-        return;
-      } catch (e) {
-        // Fallback below
-      }
-    }
-
-    fallbackFetchSuggestions(trimmed);
-  }
-
-  async function fallbackFetchSuggestions(trimmed) {
-    try {
-      const url = `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(trimmed)}`;
-      const res = await fetch(url);
-      if (!res.ok) return;
-      const data = await res.json();
-      const suggestions = (data[1] || []).slice(0, 8);
-      showSuggestions(suggestions, trimmed);
-    } catch (_) {
-      // Network error or extension CSP — silently fail, search still works
-    }
+    hideSuggestions();
   }
 
   if (searchForm && searchInput) {
@@ -2825,15 +2789,7 @@
    * Today's Momentum — pulls real habit/completion data so the new tab
    * shows live progress without opening the dashboard.
    * ------------------------------------------------------------------- */
-  /* =====================================================================
-   * GOOGLE LENS BUTTON
-   * ===================================================================== */
-  const lensSearchBtn = document.getElementById("lensSearchBtn");
-  if (lensSearchBtn) {
-    lensSearchBtn.addEventListener("click", () => {
-      window.open("https://lens.google.com/", "_blank", "noopener,noreferrer");
-    });
-  }
+
 
   /* =====================================================================
    * LIVE NTP CLOCK — Dynamic greeting, precise time, and formatted date

@@ -25,6 +25,7 @@ console.log(`📦 Packaging Cadence Pro Extension v${version} for Chrome Web Sto
 // Command to zip only client files
 const filesToInclude = [
   "manifest.json",
+  "tokens.css",
   "popup.html",
   "popup.css",
   "popup.js",
@@ -37,6 +38,8 @@ const filesToInclude = [
   "blocked.html",
   "blocked.css",
   "blocked.js",
+  "mascot.js",
+  "mascot.css",
   "bootstrapper.js",
   "background.js",
   "common.js",

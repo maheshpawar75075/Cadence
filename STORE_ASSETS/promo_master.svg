@@ -1,0 +1,54 @@
+<svg width="440" height="280" viewBox="0 0 440 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="promoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F19"/>
+      <stop offset="50%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#31104B"/>
+    </linearGradient>
+    <linearGradient id="neonGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="50%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <filter id="pGlow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background with dark glow -->
+  <rect width="440" height="280" fill="url(#promoBg)"/>
+  <circle cx="80" cy="70" r="110" fill="#6366F1" opacity="0.28" filter="url(#pGlow)"/>
+  <circle cx="380" cy="220" r="100" fill="#EC4899" opacity="0.22" filter="url(#pGlow)"/>
+
+  <!-- Logo Mark Left -->
+  <g transform="translate(48, 64)" filter="url(#pGlow)">
+    <rect width="76" height="76" rx="20" fill="#0F172A" stroke="#818CF8" stroke-width="2"/>
+    <path d="M 52 28 A 20 20 0 1 0 52 56" fill="none" stroke="url(#neonGlowGrad)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M 28 42 L 36 42 L 42 32 L 48 50 L 54 42 L 60 42" fill="none" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text Header -->
+  <g transform="translate(142, 88)">
+    <text y="0" font-family="-apple-system, system-ui, sans-serif" font-size="30" font-weight="900" fill="#FFFFFF" letter-spacing="1">CADENCE</text>
+    <text y="24" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="700" fill="#818CF8" letter-spacing="1.5">HABIT &amp; PERFORMANCE TRACKER</text>
+  </g>
+
+  <!-- Feature Pills -->
+  <g transform="translate(36, 172)">
+    <rect x="0" y="0" width="112" height="28" rx="14" fill="#1E293B" stroke="#6366F1" stroke-opacity="0.4"/>
+    <text x="56" y="18" font-family="-apple-system, system-ui, sans-serif" font-size="11" font-weight="700" fill="#E0E7FF" text-anchor="middle">🎯 Habit Streaks</text>
+
+    <rect x="122" y="0" width="118" height="28" rx="14" fill="#1E293B" stroke="#A855F7" stroke-opacity="0.4"/>
+    <text x="181" y="18" font-family="-apple-system, system-ui, sans-serif" font-size="11" font-weight="700" fill="#F3E8FF" text-anchor="middle">⏱️ Focus Sprints</text>
+
+    <rect x="250" y="0" width="118" height="28" rx="14" fill="#1E293B" stroke="#EC4899" stroke-opacity="0.4"/>
+    <text x="309" y="18" font-family="-apple-system, system-ui, sans-serif" font-size="11" font-weight="700" fill="#FCE7F3" text-anchor="middle">🌧️ Soundscapes</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <g transform="translate(36, 222)">
+    <rect x="0" y="0" width="368" height="34" rx="10" fill="#6366F1" fill-opacity="0.25" stroke="#818CF8" stroke-width="1"/>
+    <text x="184" y="22" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">✨ Transform Every New Tab Into Deep Focus</text>
+  </g>
+</svg>

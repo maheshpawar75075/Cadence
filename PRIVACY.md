@@ -30,7 +30,6 @@ Cadence has a single purpose: to help users build consistent daily habits, maint
 * **We do not use your data for advertising, marketing profiling, or creditworthiness evaluation.**
 * Data is only communicated with the following necessary service endpoints:
   * Google OAuth / Supabase: For secure user authentication and habit backup.
-  * Google Suggest API (`suggestqueries.google.com`): For optional real-time search suggestions in the new tab search box.
   * Unsplash API (`images.unsplash.com`): For retrieving high-resolution wallpaper imagery.
 
 ---

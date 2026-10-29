@@ -1,0 +1,96 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Deep Space Midnight Background Gradient -->
+    <radialGradient id="deepBg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="45%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#05070E"/>
+    </radialGradient>
+
+    <!-- Neon Cadence Arc Gradient -->
+    <linearGradient id="neonArc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="35%" stop-color="#6366F1"/>
+      <stop offset="70%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+
+    <!-- Pulse Wave Gradient -->
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#F43F5E"/>
+    </linearGradient>
+
+    <!-- Outer Ambient Glow Filters -->
+    <filter id="megaGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="32" result="blur1"/>
+      <feGaussianBlur stdDeviation="64" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="sharpGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Full Bleed Square Background (Seamless when Instagram crops to a circle) -->
+  <rect width="1080" height="1080" fill="url(#deepBg)"/>
+
+  <!-- Subtle Concentric Focus Rings (Zen/Radar aesthetic) -->
+  <circle cx="540" cy="540" r="460" fill="none" stroke="#6366F1" stroke-width="1.5" stroke-opacity="0.12" stroke-dasharray="8 8"/>
+  <circle cx="540" cy="540" r="390" fill="none" stroke="#38BDF8" stroke-width="1" stroke-opacity="0.15"/>
+  <circle cx="540" cy="540" r="320" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-opacity="0.12" stroke-dasharray="4 6"/>
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="540" cy="520" r="220" fill="#6366F1" opacity="0.28" filter="url(#megaGlow)"/>
+  <circle cx="620" cy="460" r="160" fill="#EC4899" opacity="0.22" filter="url(#megaGlow)"/>
+  <circle cx="440" cy="580" r="140" fill="#38BDF8" opacity="0.20" filter="url(#megaGlow)"/>
+
+  <!-- Centered Cadence Emblem -->
+  <g transform="translate(540, 540) scale(1.6) translate(-256, -256)" filter="url(#sharpGlow)">
+    <!-- Arc of C -->
+    <path d="M 345 155 A 132 132 0 1 0 345 357" 
+          fill="none" 
+          stroke="url(#neonArc)" 
+          stroke-width="44" 
+          stroke-linecap="round"/>
+    
+    <!-- Inner subtle glow trace -->
+    <path d="M 345 155 A 132 132 0 1 0 345 357" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="6" 
+          stroke-linecap="round" 
+          stroke-opacity="0.4"/>
+
+    <!-- Velocity Habit Pulse Wave -->
+    <path d="M 165 256 L 215 256 L 248 190 L 290 322 L 328 256 L 385 256" 
+          fill="none" 
+          stroke="url(#pulseGrad)" 
+          stroke-width="22" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Center White Laser Core for the Wave -->
+    <path d="M 165 256 L 215 256 L 248 190 L 290 322 L 328 256 L 385 256" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          stroke-opacity="0.85"/>
+
+    <!-- Apex Achievement Sparks -->
+    <circle cx="248" cy="190" r="15" fill="#FFFFFF"/>
+    <circle cx="248" cy="190" r="28" fill="#38BDF8" opacity="0.6"/>
+    <circle cx="290" cy="322" r="10" fill="#FFFFFF"/>
+    <circle cx="385" cy="256" r="11" fill="#FFFFFF"/>
+    <circle cx="385" cy="256" r="20" fill="#EC4899" opacity="0.5"/>
+  </g>
+</svg>

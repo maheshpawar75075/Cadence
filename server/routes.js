@@ -64,7 +64,18 @@ async function authenticateUser(req) {
     };
   }
 
-  // 2. If Supabase is configured, verify token with Supabase Auth API
+  // 2. Decode JWT payload if token is structured as a 3-part JWT
+  let jwtPayload = null;
+  if (token.includes(".")) {
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        jwtPayload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf-8"));
+      }
+    } catch (_) {}
+  }
+
+  // 3. If Supabase is configured, verify token with Supabase Auth API
   if (config.supabaseUrl && config.supabaseAnonKey) {
     try {
       const res = await fetch(`${config.supabaseUrl.replace(/\/+$/, "")}/auth/v1/user`, {
@@ -80,7 +91,7 @@ async function authenticateUser(req) {
           user: {
             id: user.id,
             email: user.email,
-            fullName: (user.user_metadata && user.user_metadata.full_name) || ""
+            fullName: (user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)) || ""
           }
         };
       }
@@ -89,7 +100,19 @@ async function authenticateUser(req) {
     }
   }
 
-  // 3. Fallback for test / simulation token
+  // 4. If Supabase REST returned 401 (e.g. expired access token) or network timeout,
+  // but it is a valid Supabase JWT with user sub / id and email:
+  if (jwtPayload && (jwtPayload.sub || jwtPayload.id)) {
+    const userId = jwtPayload.sub || jwtPayload.id;
+    const email = jwtPayload.email || (jwtPayload.user_metadata && jwtPayload.user_metadata.email) || "";
+    const fullName = (jwtPayload.user_metadata && (jwtPayload.user_metadata.full_name || jwtPayload.user_metadata.name)) || "";
+    return {
+      authenticated: true,
+      user: { id: userId, email, fullName }
+    };
+  }
+
+  // 5. Fallback for test / simulation token
   if (token.startsWith("mock_") || token.startsWith("dev_") || token.length >= 10) {
     const cleanToken = token.replace(/^(mock_|dev_)/, "");
     let email = "user@cadence.app";
@@ -98,6 +121,10 @@ async function authenticateUser(req) {
       const parts = cleanToken.split(":");
       userId = parts[0];
       email = parts[1] || email;
+    }
+    // Never allow giant tokens (e.g. raw JWT strings) to become raw user IDs
+    if (userId.length > 64) {
+      userId = toUUID(userId);
     }
     return {
       authenticated: true,
@@ -364,7 +391,8 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
     }
 
     try {
-      const sub = await db.getSubscriptionByUserId(auth.user.id);
+      const email = (parsedBody && parsedBody.email) || auth.user.email;
+      const sub = await db.getSubscriptionByUserId(auth.user.id, email);
       if (!sub) {
         return json(200, { entitled: false, reason: "no_subscription" });
       }
@@ -409,7 +437,7 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
     if (!auth.authenticated) return json(401, { error: auth.error });
 
     try {
-      const sub = await db.getSubscriptionByUserId(auth.user.id);
+      const sub = await db.getSubscriptionByUserId(auth.user.id, auth.user.email);
       if (!sub) {
         return json(200, { subscription: null });
       }

@@ -1,6 +1,6 @@
 # Chrome Web Store Listing — Cadence — Habit & Performance Tracker
 
-> Last Updated: 2026-09-29
+> Last Updated: 2026-10-27
 
 ## Store Listing Metadata
 
@@ -57,13 +57,10 @@ English
 
 | Asset | Dimensions | Status | Filename |
 |---|---|---|---|
-| Store Icon [REQUIRED] | 128×128 PNG | ✅ Ready | `icons/icon128.png` |
-| Screenshot 1 [REQUIRED] | 1280×800 | ⬜ To Capture | New Tab Dashboard with Habits & 4K Wallpaper |
-| Screenshot 2 [RECOMMENDED] | 1280×800 | ⬜ To Capture | Focus Sprint Timer & Focus Guard Site Blocker |
-| Screenshot 3 [RECOMMENDED] | 1280×800 | ⬜ To Capture | Ambient Soundscapes & Companion Evolution |
-| Screenshot 4 [RECOMMENDED] | 1280×800 | ⬜ To Capture | Habit Analytics, Streaks & Weekly Reports |
-| Small Promo Tile [RECOMMENDED] | 440×280 | ⬜ To Create | Cadence Logo with Tagline |
-| Marquee Promo Tile | 1400×560 | ⬜ Optional | Full-width Banner |
+| Store Icon [REQUIRED] | 128×128 PNG | ✅ Ready | `STORE_ASSETS/1_Store_Icon_128x128.png` |
+| Screenshot 1 [REQUIRED] | 1280×800 PNG | ✅ Ready | `STORE_ASSETS/2_Screenshot_1280x800.png` |
+| Small Promo Tile [RECOMMENDED] | 440×280 PNG | ✅ Ready | `STORE_ASSETS/3_Promo_Tile_440x280.png` |
+| Marquee Promo Tile [OPTIONAL] | 1400×560 PNG | ✅ Ready | `STORE_ASSETS/4_Marquee_Promo_Tile_1400x560.png` |
 
 ---
 
@@ -77,7 +74,7 @@ English
 | `notifications` | permissions | Delivers desktop notifications when a focus sprint finishes or when daily habit targets are accomplished. |
 | `identity` | permissions | Authenticates the user's Cadence Pro account and Google OAuth sign-in to verify paid subscription status. |
 | `tabs` | permissions | Redirects distracting web pages to a zen calm screen when the user has active Focus Guard sprint mode enabled. |
-| `https://suggestqueries.google.com/*` | host_permissions | Fetches real-time search suggestions inside the new-tab search box as the user types. |
+| `search` | permissions | Executes search queries entered in the new tab search box using the user's selected default search engine via the official Chrome Search API (`chrome.search.query`). |
 | `https://images.unsplash.com/*` | host_permissions | Downloads curated 4K photography backgrounds for the customizable new tab interface. |
 | `https://cadence-abl9.onrender.com/*` | host_permissions | Connects to the secure SaaS backend to authenticate users and verify active Cadence Pro subscription status. |
 | `https://*.supabase.co/*` | host_permissions | Cloud database connection endpoint for authenticating accounts and syncing user habits across browser sessions. |
@@ -103,4 +100,5 @@ English
 
 | Version | Date | Highlights |
 |---|---|---|
+| 2.4.1 | 2026-10-27 | Fixed Chrome Web Store policy compliance (Red Argon / Single Purpose): integrated official Chrome Search API (`chrome.search.query`) to strictly respect user's default search provider settings, removed hardcoded search URL, removed Google Suggest proxy and host permissions. |
 | 2.4.0 | 2026-09-29 | Integrated Cadence Pro SaaS subscription engine (₹69/mo & ₹799/yr), Razorpay/Stripe checkout, Supabase cloud sync, and hardened entitlement gatekeeper. |

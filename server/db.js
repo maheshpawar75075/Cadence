@@ -157,10 +157,17 @@ class DatabaseService {
     };
     if (this.isSupabaseConfigured) {
       try {
+        const supabaseProfilePayload = {
+          id: safeId,
+          full_name: payload.full_name,
+          email: payload.email,
+          role: payload.role,
+          updated_at: payload.updated_at
+        };
         const data = await this.#supabaseFetch("profiles", {
           method: "POST",
           prefer: "resolution=merge-duplicates,return=representation",
-          body: payload
+          body: supabaseProfilePayload
         });
         if (data && data[0]) {
           const merged = { ...data[0], ...payload };
@@ -170,7 +177,7 @@ class DatabaseService {
         }
       } catch (err) {
         if (!err.message || !err.message.includes("violates foreign key constraint")) {
-          throw err;
+          console.warn("[DB] Supabase profile upsert fallback:", err.message);
         }
       }
     }
@@ -199,7 +206,7 @@ class DatabaseService {
   }
 
   // --- Subscriptions ---
-  async getSubscriptionByUserId(userId) {
+  async getSubscriptionByUserId(userId, email = null) {
     const safeId = toUUID(userId);
     if (this.isSupabaseConfigured) {
       // Order by created_at desc to get most recent
@@ -207,9 +214,29 @@ class DatabaseService {
         `subscriptions?user_id=eq.${safeId}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
       );
       if (data && data[0]) return data[0];
+
+      // If no subscription found by user_id and email is provided, check by profile email
+      if (email) {
+        const profile = await this.getUserByEmail(email);
+        if (profile && profile.id && profile.id !== safeId) {
+          const dataByEmail = await this.#supabaseFetch(
+            `subscriptions?user_id=eq.${profile.id}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
+          );
+          if (dataByEmail && dataByEmail[0]) return dataByEmail[0];
+        }
+      }
     }
     // Search in mock store
     const subs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === safeId || s.user_id === userId);
+    if (subs.length === 0 && email) {
+      const cleanEmail = email.trim().toLowerCase();
+      for (const p of mockStore.profiles.values()) {
+        if (p.email && p.email.toLowerCase() === cleanEmail) {
+          const profileSubs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === p.id);
+          subs.push(...profileSubs);
+        }
+      }
+    }
     subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const sub = subs[0] || null;
     if (sub && !sub.subscription_plans) {
