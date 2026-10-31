@@ -100,6 +100,7 @@ English
 
 | Version | Date | Highlights |
 |---|---|---|
+| 2.4.4 | 2026-10-31 | Prioritized active subscriptions over pending sessions, added automatic email-based payment reconciliation for Razorpay subscribers, and streamlined seamless login entitlement verification. |
 | 2.4.3 | 2026-10-31 | Hardened paywall entitlement protection, resolved timezone date indexing in omnibox, synchronized subtask checklist states, harmonized ₹88/mo pricing, and added topbar dark/light theme toggle. |
 | 2.4.2 | 2026-10-29 | Enhanced performance reporting with daily notes, tasks export, and optimized local storage cache sync. |
 | 2.4.1 | 2026-10-27 | Fixed Chrome Web Store policy compliance (Red Argon / Single Purpose): integrated official Chrome Search API (`chrome.search.query`) to strictly respect user's default search provider settings, removed hardcoded search URL, removed Google Suggest proxy and host permissions. |
