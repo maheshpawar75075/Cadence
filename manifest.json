@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Cadence — Habit & Performance Tracker",
-  "version": "2.4.1",
+  "version": "2.4.3",
   "description": "A premium habit and focus workspace with rich insights, 4K new-tab backgrounds, soundscapes, focus sprints, and streak tracking.",
   "action": {
     "default_popup": "popup.html",

@@ -1220,8 +1220,8 @@
       // 11. SaaS Pricing & Plans
       if (/\b(pro|pricing|cost|price|plans?|upgrade|subscription)\b/i.test(q) || q.includes("how much") || q.includes("razorpay") || q.includes("stripe")) {
         return `⚡ **Cadence Pro Pricing & Plans:**\n\n` +
-               `• **Monthly Plan:** **₹69 / month** (Recurring monthly billing · Full access · Cancel anytime)\n` +
-               `• **Yearly Plan:** **₹799 / year** (~₹66/month · **Save ₹29/year vs monthly** · Uninterrupted access)\n\n` +
+               `• **Monthly Plan:** **₹88 / month** (Recurring monthly billing · Full access · Cancel anytime)\n` +
+               `• **Yearly Plan:** **₹799 / year** (~₹66/month · **Save ₹257/year vs monthly** · Uninterrupted access)\n\n` +
                `Includes all 34 4K environments, all AI companions, 432Hz spatial soundscapes, unlimited AI coach queries, and streak freeze shields! Click the ⚡ PRO button in your top bar or open Dashboard to manage your subscription. 🛡️`;
       }
 

@@ -366,4 +366,41 @@ describe("Cadence SaaS Server & Monetization Engine", () => {
     const res = await request("HEAD", "/health");
     assert.strictEqual(res.status, 200);
   });
+
+  test("15. Entitlement Prioritization: Active subscription is never shadowed by newer pending subscription", async () => {
+    const testUserId = "test_user_shadow_" + Date.now();
+    const token = `mock_${testUserId}:shadowtest@test.com`;
+
+    // 1. Activate an initial subscription
+    const activateRes = await request("POST", "/api/checkout/simulate-success", {
+      headers: { "Content-Type": "application/json" },
+      body: { userId: testUserId, planCode: "monthly", subscriptionId: `sub_active_${Date.now()}` }
+    });
+    assert.strictEqual(activateRes.status, 200);
+
+    // 2. Verify user is entitled
+    const verify1 = await request("POST", "/api/subscription/verify", {
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: { userId: testUserId, email: "shadowtest@test.com" }
+    });
+    const data1 = await verify1.json();
+    assert.strictEqual(data1.entitled, true);
+    assert.strictEqual(data1.status, "active");
+
+    // 3. User attempts checkout again or has a pending session created
+    const checkoutRes = await request("POST", "/api/checkout/create", {
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: { planCode: "monthly", provider: "razorpay" }
+    });
+    assert.strictEqual(checkoutRes.status, 200);
+
+    // 4. Verification MUST STILL return entitled=true (active sub is never shadowed by pending!)
+    const verify2 = await request("POST", "/api/subscription/verify", {
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: { userId: testUserId, email: "shadowtest@test.com" }
+    });
+    const data2 = await verify2.json();
+    assert.strictEqual(data2.entitled, true, "Active subscription must remain entitled and never be blocked by pending session");
+    assert.strictEqual(data2.status, "active");
+  });
 });

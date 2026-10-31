@@ -192,12 +192,20 @@ function setupOmniboxDefault() {
   }
 }
 
+function getLocalDateKey() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 if (chrome.omnibox) {
   chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
     const q = (text || "").trim().toLowerCase();
     const stored = await chrome.storage.local.get(["fl_habits", "fl_completions"]);
     const habits = stored.fl_habits || [];
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getLocalDateKey();
     const todayCompletions = (stored.fl_completions && stored.fl_completions[today]) || {};
 
     const suggestions = [];
@@ -271,14 +279,14 @@ if (chrome.omnibox) {
         type: "basic",
         iconUrl: "icons/icon128.png",
         title: "Cadence Pro Subscription Required",
-        message: "Subscribe to Cadence Pro (₹69/mo or ₹799/yr) to unlock commands & focus features.",
+        message: "Subscribe to Cadence Pro (₹88/mo or ₹799/yr) to unlock commands & focus features.",
         priority: 2
       });
       chrome.tabs.create({ url: chrome.runtime.getURL("newtab.html") });
       return;
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getLocalDateKey();
     if (!completions[today]) completions[today] = {};
 
     let notifyTitle = "Cadence";
@@ -417,6 +425,4 @@ if (chrome.omnibox) {
       priority: 2
     });
   });
-}
-
 }

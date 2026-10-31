@@ -2877,6 +2877,17 @@
     if (closeBtn) closeBtn.addEventListener("click", dismiss);
   }
 
+  let initialized = false;
+  async function safeInit() {
+    if (initialized) return;
+    initialized = true;
+    try {
+      await init();
+    } catch (err) {
+      console.error("[Cadence] New Tab init error:", err);
+    }
+  }
+
   async function boot() {
     const subBtn = document.getElementById("ntpManageSubBtn");
     if (subBtn) {
@@ -2888,11 +2899,15 @@
     }
 
     if (window.FL && FL.saasGate) {
-      const isEntitled = await FL.saasGate.protectPage();
+      const isEntitled = await FL.saasGate.protectPage({
+        onEntitled: () => {
+          safeInit();
+        }
+      });
       if (!isEntitled) return;
     }
 
-    init();
+    safeInit();
   }
 
   if (document.readyState === "loading") {

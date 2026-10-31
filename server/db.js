@@ -208,41 +208,104 @@ class DatabaseService {
   // --- Subscriptions ---
   async getSubscriptionByUserId(userId, email = null) {
     const safeId = toUUID(userId);
+    const nowIso = new Date().toISOString();
+
     if (this.isSupabaseConfigured) {
-      // Order by created_at desc to get most recent
-      const data = await this.#supabaseFetch(
+      // 1. Check for active or authenticated subscription for safeId
+      let data = await this.#supabaseFetch(
+        `subscriptions?user_id=eq.${safeId}&status=in.(active,authenticated)&order=current_period_end.desc,created_at.desc&limit=1&select=*,subscription_plans(*)`
+      );
+      if (data && data[0]) return data[0];
+
+      // 2. Check for canceled subscription within prepaid grace period for safeId
+      data = await this.#supabaseFetch(
+        `subscriptions?user_id=eq.${safeId}&status=eq.canceled&current_period_end=gt.${nowIso}&order=current_period_end.desc&limit=1&select=*,subscription_plans(*)`
+      );
+      if (data && data[0]) return data[0];
+
+      // 3. If email is provided, check if ANY profile with that email has an active/prepaid subscription
+      if (email) {
+        const cleanEmail = email.trim().toLowerCase();
+        const profiles = await this.#supabaseFetch(`profiles?email=eq.${encodeURIComponent(cleanEmail)}&select=id`);
+        if (profiles && profiles.length) {
+          for (const p of profiles) {
+            if (p.id !== safeId) {
+              const pActive = await this.#supabaseFetch(
+                `subscriptions?user_id=eq.${p.id}&status=in.(active,authenticated)&order=current_period_end.desc,created_at.desc&limit=1&select=*,subscription_plans(*)`
+              );
+              if (pActive && pActive[0]) return pActive[0];
+
+              const pCanceled = await this.#supabaseFetch(
+                `subscriptions?user_id=eq.${p.id}&status=eq.canceled&current_period_end=gt.${nowIso}&order=current_period_end.desc&limit=1&select=*,subscription_plans(*)`
+              );
+              if (pCanceled && pCanceled[0]) return pCanceled[0];
+            }
+          }
+        }
+      }
+
+      // 4. Fallback: check most recent subscription of any status for safeId
+      data = await this.#supabaseFetch(
         `subscriptions?user_id=eq.${safeId}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
       );
       if (data && data[0]) return data[0];
 
-      // If no subscription found by user_id and email is provided, check by profile email
+      // 5. Fallback: check most recent subscription of any status for matching email profile
       if (email) {
-        const profile = await this.getUserByEmail(email);
-        if (profile && profile.id && profile.id !== safeId) {
-          const dataByEmail = await this.#supabaseFetch(
-            `subscriptions?user_id=eq.${profile.id}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
-          );
-          if (dataByEmail && dataByEmail[0]) return dataByEmail[0];
+        const cleanEmail = email.trim().toLowerCase();
+        const profiles = await this.#supabaseFetch(`profiles?email=eq.${encodeURIComponent(cleanEmail)}&select=id`);
+        if (profiles && profiles.length) {
+          for (const p of profiles) {
+            if (p.id !== safeId) {
+              const pFallback = await this.#supabaseFetch(
+                `subscriptions?user_id=eq.${p.id}&order=created_at.desc&limit=1&select=*,subscription_plans(*)`
+              );
+              if (pFallback && pFallback[0]) return pFallback[0];
+            }
+          }
         }
       }
     }
+
     // Search in mock store
     const subs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === safeId || s.user_id === userId);
-    if (subs.length === 0 && email) {
+    if (email) {
       const cleanEmail = email.trim().toLowerCase();
       for (const p of mockStore.profiles.values()) {
-        if (p.email && p.email.toLowerCase() === cleanEmail) {
+        if (p.email && p.email.toLowerCase() === cleanEmail && p.id !== safeId) {
           const profileSubs = Array.from(mockStore.subscriptions.values()).filter(s => s.user_id === p.id);
           subs.push(...profileSubs);
         }
       }
     }
-    subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    const sub = subs[0] || null;
-    if (sub && !sub.subscription_plans) {
-      sub.subscription_plans = mockStore.subscription_plans.get(sub.plan_code || "monthly") || null;
+
+    if (subs.length > 0) {
+      // Sort with priority: active/authenticated (3) > canceled in period (2) > pending (1) > other (0)
+      const now = new Date();
+      const getPriority = (s) => {
+        const isActive = s.status === "active" || s.status === "authenticated";
+        if (isActive) return 3;
+        const periodEnd = s.current_period_end ? new Date(s.current_period_end) : null;
+        if (s.status === "canceled" && periodEnd && periodEnd > now) return 2;
+        if (s.status === "pending") return 1;
+        return 0;
+      };
+
+      subs.sort((a, b) => {
+        const pA = getPriority(a);
+        const pB = getPriority(b);
+        if (pA !== pB) return pB - pA;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      const sub = subs[0];
+      if (sub && !sub.subscription_plans) {
+        sub.subscription_plans = mockStore.subscription_plans.get(sub.plan_code || "monthly") || null;
+      }
+      return sub;
     }
-    return sub;
+
+    return null;
   }
 
   async getSubscriptionByProviderSubId(providerSubId) {
@@ -259,10 +322,19 @@ class DatabaseService {
   }
 
   async saveSubscription(subData) {
-    const id = toUUID(subData.id || crypto.randomUUID());
+    let id = toUUID(subData.id || crypto.randomUUID());
     const safeUserId = toUUID(subData.user_id);
     const now = new Date().toISOString();
-    const existing = subData.id ? mockStore.subscriptions.get(id) : null;
+
+    // Check if subscription with this provider_subscription_id already exists to reuse its UUID
+    if (subData.provider_subscription_id) {
+      const existingSub = await this.getSubscriptionByProviderSubId(subData.provider_subscription_id);
+      if (existingSub && existingSub.id) {
+        id = existingSub.id;
+      }
+    }
+
+    const existing = mockStore.subscriptions.get(id);
     const createdAt = (existing && existing.created_at) || subData.created_at || now;
 
     const record = {
@@ -306,6 +378,16 @@ class DatabaseService {
           prefer: "resolution=merge-duplicates,return=representation",
           body: supabasePayload
         });
+
+        // If active, automatically clean up obsolete pending checkout rows for this user
+        if (record.status === "active" || record.status === "authenticated") {
+          try {
+            await this.#supabaseFetch(`subscriptions?user_id=eq.${safeUserId}&status=eq.pending`, {
+              method: "DELETE"
+            });
+          } catch (_) {}
+        }
+
         if (data && data[0]) return { ...data[0], plan_code: record.plan_code };
       } catch (err) {
         if (!err.message || !err.message.includes("violates foreign key constraint")) {
@@ -315,6 +397,15 @@ class DatabaseService {
     }
 
     mockStore.subscriptions.set(id, record);
+    // Clean up pending subscriptions in mock store if saving an active one
+    if (record.status === "active" || record.status === "authenticated") {
+      for (const [sId, s] of mockStore.subscriptions.entries()) {
+        if (s.user_id === safeUserId && s.status === "pending" && sId !== id) {
+          mockStore.subscriptions.delete(sId);
+        }
+      }
+    }
+
     persistStoreToFile();
     return record;
   }

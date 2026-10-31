@@ -88,7 +88,7 @@
       const statusClass = sub && sub.status === "active" ? "status-active" : (sub && sub.status === "canceled" ? "status-canceled" : "status-expired");
       const statusLabel = sub ? sub.status.toUpperCase() : "NO SUB";
       const paidThrough = sub && sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toLocaleDateString() : "—";
-      const planName = sub ? (sub.plan === "yearly" ? "Pro Yearly (₹799)" : "Pro Monthly (₹69)") : "None";
+      const planName = sub ? (sub.plan === "yearly" ? "Pro Yearly (₹799)" : "Pro Monthly (₹88)") : "None";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `

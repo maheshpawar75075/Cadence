@@ -753,12 +753,66 @@ function openRitualModal() {
   }
 }
 
+async function openNotesModal() {
+  let modal = document.getElementById("cadenceNotesModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "cadenceNotesModal";
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+      z-index: 99999; padding: 16px;
+    `;
+    document.body.appendChild(modal);
+  }
+
+  const dKey = dateKey(today);
+  const dailyNotes = FL.loadDailyNotes ? await FL.loadDailyNotes() : {};
+  const currentNote = (dailyNotes && dailyNotes[dKey]) ? dailyNotes[dKey] : "";
+
+  modal.innerHTML = `
+    <div style="
+      background: var(--card, #151124); border: 1.5px solid var(--line, #27213C);
+      border-radius: 20px; width: 100%; max-width: 380px; padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5); font-family: 'Inter', sans-serif; color: var(--ink, #fff);
+    ">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <h3 style="margin:0; font-family:'Poppins',sans-serif; font-size:16px;">📝 Daily Notes &amp; Thoughts</h3>
+        <button id="closeNotesModal" style="background:none; border:none; color:var(--ink-soft,#8a8fa3); font-size:18px; cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:11.5px; color:var(--ink-soft,#8a8fa3); margin:0 0 10px;">Jot down key tasks, breakthroughs, or focus reminders for today. These will be included in your Weekly Report.</p>
+      <textarea id="popupNoteInput" style="width:100%; height:130px; background:rgba(255,255,255,0.04); border:1.5px solid var(--line,#27213C); border-radius:12px; padding:10px; font-family:'Inter',sans-serif; font-size:12.5px; color:var(--ink,#fff); outline:none; resize:none; margin-bottom:12px; line-height:1.4;" placeholder="• Top outcome for today...\n• Key meeting note...\n• Focus reminder...">${FL.esc(currentNote)}</textarea>
+      <button id="savePopupNoteBtn" style="width:100%; background:linear-gradient(135deg,#6C5CE7,#8E7CF6); color:#fff; border:none; border-radius:12px; padding:10px; font-weight:700; cursor:pointer;">Save Today's Note 💾</button>
+    </div>
+  `;
+
+  modal.querySelector("#closeNotesModal").addEventListener("click", () => modal.remove());
+  modal.querySelector("#savePopupNoteBtn").addEventListener("click", async () => {
+    const val = modal.querySelector("#popupNoteInput").value.trim();
+    dailyNotes[dKey] = val;
+    if (FL.saveDailyNotes) {
+      await FL.saveDailyNotes(dailyNotes);
+    } else {
+      await chrome.storage.local.set({ fl_notes_daily: dailyNotes });
+    }
+    modal.remove();
+    if (mascot && mascot.cheer) mascot.cheer({ message: "Daily note saved! 📝" });
+  });
+}
+
 el("openDashboard").addEventListener("click", () => {
   chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html") });
 });
 
 (async function init() {
-  if (FL.saasGate) {
+  // 1. Load data FIRST so habits and completions are ready before any render
+  proSettings = await FL.loadProSettings();
+  settings = await loadSettings();
+  habits = await loadHabits();
+  completions = await loadCompletions();
+
+  const isIframe = typeof window !== "undefined" && window.self !== window.top;
+  if (!isIframe && FL.saasGate) {
     const isEntitled = await FL.saasGate.protectPage({
       onEntitled: () => {
         render();
@@ -767,7 +821,6 @@ el("openDashboard").addEventListener("click", () => {
     if (!isEntitled) return;
   }
 
-  proSettings = await FL.loadProSettings();
   const initialMode = (proSettings && proSettings.themeSettings && proSettings.themeSettings.themeMode) || "system";
   applyTheme(initialMode);
 
@@ -786,8 +839,6 @@ el("openDashboard").addEventListener("click", () => {
   mascot.init("popup");
   initAmbientFx();
   initHeroFx();
-  habits = await loadHabits();
-  completions = await loadCompletions();
   initQuickAdd();
   initCategoryPills();
 
@@ -810,6 +861,7 @@ el("openDashboard").addEventListener("click", () => {
 
   if (el("pomoTimerBtn")) el("pomoTimerBtn").addEventListener("click", openPomoModal);
   if (el("ritualModeBtn")) el("ritualModeBtn").addEventListener("click", openRitualModal);
+  if (el("popupNotesBtn")) el("popupNotesBtn").addEventListener("click", openNotesModal);
   const popCadence = el("popupCadenceBtn");
   if (popCadence) {
     const isBound = (popCadence.dataset && popCadence.dataset.cadenceBound) || (popCadence.getAttribute && popCadence.getAttribute("data-cadence-bound") === "true");

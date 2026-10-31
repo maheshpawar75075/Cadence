@@ -345,6 +345,25 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
     }
 
     try {
+      // Check if user already has an active, valid subscription
+      const existingSub = await db.getSubscriptionByUserId(auth.user.id, auth.user.email);
+      const now = new Date();
+      const isAlreadyActive = existingSub && (
+        existingSub.status === "active" ||
+        existingSub.status === "authenticated" ||
+        (existingSub.status === "canceled" && existingSub.current_period_end && new Date(existingSub.current_period_end) > now)
+      );
+
+      if (isAlreadyActive) {
+        return json(200, {
+          success: true,
+          alreadySubscribed: true,
+          message: "You already have an active Cadence Pro subscription.",
+          subscriptionId: existingSub.provider_subscription_id,
+          subscription: existingSub
+        });
+      }
+
       // Ensure profile exists in database
       await db.upsertProfile(auth.user.id, {
         email: auth.user.email,
@@ -392,31 +411,79 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
 
     try {
       const email = (parsedBody && parsedBody.email) || auth.user.email;
-      const sub = await db.getSubscriptionByUserId(auth.user.id, email);
-      if (!sub) {
-        return json(200, { entitled: false, reason: "no_subscription" });
-      }
+      let sub = await db.getSubscriptionByUserId(auth.user.id, email);
 
       const now = new Date();
-      const periodEnd = sub.current_period_end ? new Date(sub.current_period_end) : null;
-      const isActive = sub.status === "active";
-      const isWithinGraceOrPeriod = periodEnd && periodEnd > now;
+      let isActive = sub && (sub.status === "active" || sub.status === "authenticated");
+      let periodEnd = sub && sub.current_period_end ? new Date(sub.current_period_end) : null;
+      let isWithinGraceOrPeriod = Boolean(periodEnd && periodEnd > now);
 
-      // Entitlement rules:
-      // 1. Active subscription -> Entitled!
-      // 2. Canceled but current_period_end is in the future -> Entitled through paid period!
-      // 3. Otherwise -> Not entitled.
-      if (isActive || (sub.status === "canceled" && isWithinGraceOrPeriod)) {
+      // If NOT active according to database, check live Razorpay status for instant automatic activation
+      if (!isActive && !(sub && sub.status === "canceled" && isWithinGraceOrPeriod) && razorpay.isLive) {
+        try {
+          let rzpSub = null;
+
+          // A. If user had a pending or recent subscription ID, check if it was paid on Razorpay
+          if (sub && sub.provider_subscription_id) {
+            const fetched = await razorpay.fetchSubscription(sub.provider_subscription_id);
+            if (fetched && (fetched.status === "active" || fetched.status === "authenticated" || (fetched.paid_count && fetched.paid_count > 0))) {
+              rzpSub = fetched;
+            }
+          }
+
+          // B. If still not active, search Razorpay by user email or customer email
+          if (!rzpSub && email) {
+            rzpSub = await razorpay.findActiveSubscriptionByEmail(email);
+          }
+
+          // C. If active subscription found in Razorpay, auto-activate and save in DB!
+          if (rzpSub) {
+            const planCode = (rzpSub.notes && rzpSub.notes.plan_code) || (sub && sub.plan_code) || "monthly";
+            const interval = planCode === "yearly" ? "year" : "month";
+            const currentStart = rzpSub.current_start ? new Date(rzpSub.current_start * 1000).toISOString() : new Date().toISOString();
+            const currentEnd = rzpSub.current_end ? new Date(rzpSub.current_end * 1000).toISOString() : calculatePeriodEnd(interval, new Date(currentStart));
+
+            const dbPlan = await db.getPlanByCode(planCode);
+            const planId = dbPlan ? dbPlan.id : (planCode === "yearly" ? "plan-yearly-uuid" : "plan-monthly-uuid");
+
+            sub = await db.saveSubscription({
+              id: sub ? sub.id : undefined,
+              user_id: auth.user.id,
+              plan_id: planId,
+              plan_code: planCode,
+              provider: "razorpay",
+              provider_customer_id: rzpSub.customer_id || null,
+              provider_subscription_id: rzpSub.id,
+              status: "active",
+              current_period_start: currentStart,
+              current_period_end: currentEnd,
+              cancel_at_period_end: false
+            });
+
+            isActive = true;
+            periodEnd = new Date(currentEnd);
+            isWithinGraceOrPeriod = true;
+          }
+        } catch (syncErr) {
+          console.warn("[Entitlement] Razorpay auto-sync check warning:", syncErr.message);
+        }
+      }
+
+      if (isActive || (sub && sub.status === "canceled" && isWithinGraceOrPeriod)) {
         return json(200, {
           entitled: true,
           status: sub.status,
-          plan: sub.subscription_plans ? sub.subscription_plans.plan_code : "monthly",
-          planName: sub.subscription_plans ? sub.subscription_plans.plan_name : "Cadence Pro",
+          plan: (sub.subscription_plans && sub.subscription_plans.plan_code) || sub.plan_code || "monthly",
+          planName: (sub.subscription_plans && sub.subscription_plans.plan_name) || "Cadence Pro",
           currentPeriodStart: sub.current_period_start,
           currentPeriodEnd: sub.current_period_end,
           cancelAtPeriodEnd: sub.cancel_at_period_end,
           provider: sub.provider
         });
+      }
+
+      if (!sub) {
+        return json(200, { entitled: false, reason: "no_subscription" });
       }
 
       return json(200, {
@@ -533,7 +600,18 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
         if (eventType === "subscription.activated" || eventType === "subscription.charged" || eventType === "payment.captured") {
           const dbPlan = await db.getPlanByCode(planCode);
           const planId = dbPlan ? dbPlan.id : (planCode === "yearly" ? "plan-yearly-uuid" : "plan-monthly-uuid");
-          const userId = (sub && sub.user_id) || notes.user_id;
+          let userId = (sub && sub.user_id) || notes.user_id;
+
+          const payerEmail = (subEntity.customer_email || paymentEntity.email || notes.email || "").trim().toLowerCase();
+          if (!userId && payerEmail) {
+            const profile = await db.getUserByEmail(payerEmail);
+            if (profile && profile.id) {
+              userId = profile.id;
+            }
+          }
+
+          const currentStart = subEntity.current_start ? new Date(subEntity.current_start * 1000).toISOString() : new Date().toISOString();
+          const currentEnd = subEntity.current_end ? new Date(subEntity.current_end * 1000).toISOString() : calculatePeriodEnd(interval, new Date(currentStart));
 
           if (userId) {
             await db.saveSubscription({
@@ -542,10 +620,11 @@ async function handleRoutes(req, res, rawBody, parsedBody) {
               plan_id: planId,
               plan_code: planCode,
               provider: "razorpay",
+              provider_customer_id: subEntity.customer_id || paymentEntity.customer_id || (sub && sub.provider_customer_id) || null,
               provider_subscription_id: subId,
               status: "active",
-              current_period_start: new Date().toISOString(),
-              current_period_end: calculatePeriodEnd(interval),
+              current_period_start: currentStart,
+              current_period_end: currentEnd,
               cancel_at_period_end: false
             });
           }

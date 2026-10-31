@@ -108,6 +108,74 @@ class RazorpayService {
     }
   }
 
+  // Fetch live subscription by ID from Razorpay
+  async fetchSubscription(subId) {
+    if (!subId) return null;
+    if (!this.isLive || subId.startsWith("sub_mock_") || subId.startsWith("sub_sim_") || subId.startsWith("sub_test_")) {
+      return null;
+    }
+    try {
+      const res = await fetch(`https://api.razorpay.com/v1/subscriptions/${subId}`, {
+        headers: { Authorization: this.getAuthHeader() }
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (err) {
+      console.warn("[Razorpay] fetchSubscription error:", err.message);
+      return null;
+    }
+  }
+
+  // Find active subscription by user email in Razorpay
+  async findActiveSubscriptionByEmail(email) {
+    if (!email || !this.isLive) return null;
+    const cleanEmail = email.trim().toLowerCase();
+
+    try {
+      // 1. Check recent subscriptions list
+      const res = await fetch("https://api.razorpay.com/v1/subscriptions?count=50", {
+        headers: { Authorization: this.getAuthHeader() }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const subs = data.items || [];
+        for (const sub of subs) {
+          const custEmail = (sub.customer_email || "").trim().toLowerCase();
+          const notesEmail = (sub.notes && sub.notes.email ? sub.notes.email : "").trim().toLowerCase();
+          const isActive = sub.status === "active" || sub.status === "authenticated" || (sub.paid_count && sub.paid_count > 0 && sub.status !== "cancelled" && sub.status !== "halted");
+
+          if (isActive && (custEmail === cleanEmail || notesEmail === cleanEmail)) {
+            return sub;
+          }
+        }
+      }
+
+      // 2. Check recent captured payments if not matched directly in subscriptions
+      const payRes = await fetch("https://api.razorpay.com/v1/payments?count=50", {
+        headers: { Authorization: this.getAuthHeader() }
+      });
+      if (payRes.ok) {
+        const payData = await payRes.json();
+        const payments = payData.items || [];
+        for (const p of payments) {
+          const payEmail = (p.email || "").trim().toLowerCase();
+          if (payEmail === cleanEmail && p.status === "captured") {
+            const subId = p.subscription_id || (p.notes && p.notes.subscription_id);
+            if (subId) {
+              const sub = await this.fetchSubscription(subId);
+              if (sub && (sub.status === "active" || sub.status === "authenticated" || sub.paid_count > 0)) {
+                return sub;
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("[Razorpay] findActiveSubscriptionByEmail error:", err.message);
+    }
+    return null;
+  }
+
   // Cancel subscription
   async cancelSubscription(providerSubId, cancelAtCycleEnd = true) {
     if (

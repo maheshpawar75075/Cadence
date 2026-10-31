@@ -172,7 +172,7 @@
       </div>
       <div class="plan-price-row">
         <span>Total Amount</span>
-        <div class="plan-price" id="planPriceDisplay">₹69</div>
+        <div class="plan-price" id="planPriceDisplay">₹88</div>
       </div>
     </div>
 
@@ -189,7 +189,7 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const plan = params.get("plan") || "monthly";
-    const amount = params.get("amount") || (plan === "yearly" ? "799" : "69");
+    const amount = params.get("amount") || (plan === "yearly" ? "799" : "88");
     const subId = params.get("subId") || "sub_" + Math.random().toString(36).slice(2);
     const userId = params.get("userId") || "dev_user_1";
     const provider = params.get("provider") || "razorpay";
